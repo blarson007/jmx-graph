@@ -8,10 +8,10 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jmxgraph.config.SingletonManager;
 import com.jmxgraph.domain.JmxAttributePath;
 import com.jmxgraph.domain.JmxAttributeValue;
 import com.jmxgraph.mbean.JmxAccessor;
+import com.jmxgraph.repository.JdbcAttributeRepository;
 import com.jmxgraph.repository.JmxAttributeRepository;
 
 
@@ -21,8 +21,8 @@ public class JmxClientJob implements Job {
 	
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
-		JmxAccessor jmxAccessor = SingletonManager.getJmxAccessor();
-		JmxAttributeRepository jmxAttributeRepository = SingletonManager.getJmxAttributeRepository();
+		JmxAccessor jmxAccessor = JmxAccessor.getInstance();
+		JmxAttributeRepository jmxAttributeRepository = JdbcAttributeRepository.getInstance();
 		try {
 			for (JmxAttributePath jmxAttributePath : jmxAttributeRepository.getAllEnabledAttributePaths()) {
 				Object value = jmxAccessor.getAttributeValue(jmxAttributePath.getObjectName(), jmxAttributePath.getAttribute());

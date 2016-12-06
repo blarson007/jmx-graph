@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.jmxgraph.config.SingletonManager;
+import com.jmxgraph.repository.JdbcAttributeRepository;
 import com.jmxgraph.repository.JmxAttributeRepository;
 
 
@@ -22,7 +22,7 @@ public class SimpleJmxServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/jsp/list-all-jmx.jsp");
 		
-		JmxAttributeRepository repository = SingletonManager.getJmxAttributeRepository();
+		JmxAttributeRepository repository = JdbcAttributeRepository.getInstance();
 		request.setAttribute("jmxList", repository.getAllJmxAttributeValues());
 		
 		dispatcher.forward(request, response);

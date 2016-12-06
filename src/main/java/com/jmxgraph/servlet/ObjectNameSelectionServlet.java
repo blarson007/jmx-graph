@@ -19,9 +19,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.google.gson.Gson;
-import com.jmxgraph.config.SingletonManager;
 import com.jmxgraph.domain.JmxAttributePath;
 import com.jmxgraph.mbean.JmxAccessor;
+import com.jmxgraph.repository.JdbcAttributeRepository;
 import com.jmxgraph.repository.JmxAttributeRepository;
 import com.jmxgraph.ui.ObjectNameHolder;
 
@@ -36,8 +36,8 @@ public class ObjectNameSelectionServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/jsp/jmx-object-selection.jsp");
 		
-		JmxAttributeRepository repository = SingletonManager.getJmxAttributeRepository();
-		JmxAccessor jmxAccessor = SingletonManager.getJmxAccessor();
+		JmxAttributeRepository repository = JdbcAttributeRepository.getInstance();
+		JmxAccessor jmxAccessor = JmxAccessor.getInstance();
 		
 		String selectedObjectName = request.getParameter("objectName");
 		if (selectedObjectName != null) { // Service the AJAX call
@@ -74,7 +74,7 @@ public class ObjectNameSelectionServlet extends HttpServlet {
 		String attribute = request.getParameter("attribute");
 		String attributeType = request.getParameter("attributeType");
 		
-		JmxAttributeRepository repository = SingletonManager.getJmxAttributeRepository();
+		JmxAttributeRepository repository = JdbcAttributeRepository.getInstance();
 		try {
 			JmxAttributePath jmxAttributePath = repository.getJmxAttributePath(objectName, attribute);
 			

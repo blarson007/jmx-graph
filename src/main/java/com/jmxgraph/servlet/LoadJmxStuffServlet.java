@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.jmxgraph.config.SingletonManager;
 import com.jmxgraph.mbean.JmxAccessor;
 
 @WebServlet(name = "LoadJmxStuffServlet", urlPatterns = { "/load-jmx.html" })
@@ -23,7 +22,7 @@ public class LoadJmxStuffServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		long startTime = System.currentTimeMillis();
 		
-		JmxAccessor jmxAccessor = SingletonManager.getJmxAccessor();
+		JmxAccessor jmxAccessor = JmxAccessor.getInstance();
 		try {
 			jmxAccessor.getAllAvailablePathsWithAttributes();
 		} catch (InstanceNotFoundException | IntrospectionException | ReflectionException e) {

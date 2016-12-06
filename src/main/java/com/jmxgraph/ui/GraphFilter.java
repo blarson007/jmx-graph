@@ -1,6 +1,6 @@
 package com.jmxgraph.ui;
 
-import com.jmxgraph.config.SingletonManager;
+import com.jmxgraph.config.PollScheduler;
 
 public enum GraphFilter {
 
@@ -37,7 +37,7 @@ public enum GraphFilter {
 	}
 	
 	public long getSqlLimit() {
-		long pollIntervalInSeconds = SingletonManager.getPollScheduler().getPollIntervalInSeconds();
+		long pollIntervalInSeconds = PollScheduler.getInstance().getPollIntervalInSeconds();
 		return numberOfSeconds / pollIntervalInSeconds;
 	}
 	

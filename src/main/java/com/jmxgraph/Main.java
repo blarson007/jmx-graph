@@ -2,8 +2,6 @@ package com.jmxgraph;
 
 import java.io.IOException;
 
-import javax.sql.DataSource;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -18,7 +16,6 @@ import com.jmxgraph.config.JmxConfig;
 import com.jmxgraph.config.PollScheduler;
 import com.jmxgraph.config.TomcatManager;
 import com.jmxgraph.mbean.JmxAccessor;
-import com.jmxgraph.repository.JdbcAttributeRepository;
 import com.jmxgraph.repository.JmxAttributeRepositoryType;
 
 
@@ -60,9 +57,7 @@ public class Main {
 	private static void createAndRegisterRepository(CommandLine commandLine) {
 		JmxAttributeRepositoryType repositoryType = 
 		commandLine.getOptionValue("per") != null && commandLine.getOptionValue("per").equalsIgnoreCase("database") ? JmxAttributeRepositoryType.EMBEDDED_DB : JmxAttributeRepositoryType.IN_MEMORY_DB;
-		DataSource dataSource = repositoryType.createDataSource();
-		
-		JdbcAttributeRepository.getInstance().initialize(dataSource);
+		repositoryType.initializeRepository();
 	}
 	
 	private static void createAndRegisterJmxAccessor(CommandLine commandLine) throws NumberFormatException, IOException {

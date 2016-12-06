@@ -10,8 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
-import com.jmxgraph.config.SingletonManager;
+import com.jmxgraph.config.PollScheduler;
 import com.jmxgraph.domain.JmxAttributePath;
+import com.jmxgraph.repository.JdbcAttributeRepository;
 import com.jmxgraph.repository.JmxAttributeRepository;
 import com.jmxgraph.ui.GraphFilter;
 
@@ -25,7 +26,7 @@ public class JmxAttributeSelectionServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/jsp/jmx-mbean-selection.jsp");
-		JmxAttributeRepository repository = SingletonManager.getJmxAttributeRepository();
+		JmxAttributeRepository repository = JdbcAttributeRepository.getInstance();
 		
 		String pathId = request.getParameter("pathId");
 		if (pathId != null) {
@@ -40,7 +41,7 @@ public class JmxAttributeSelectionServlet extends HttpServlet {
 			response.setContentType("application/json");
 			response.getWriter().write(jsonResponse);
 		} else {
-			request.setAttribute("pollIntervalMs", SingletonManager.getPollScheduler().getPollIntervalInSeconds() * 1000);
+			request.setAttribute("pollIntervalMs", PollScheduler.getInstance().getPollIntervalInSeconds() * 1000);
 			request.setAttribute("filters", GraphFilter.values());
 			request.setAttribute("jmxList", repository.getAllEnabledAttributePaths());
 			
