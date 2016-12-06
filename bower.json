@@ -1,0 +1,20 @@
+{
+  "name": "jmx-client",
+  "authors": [
+    "Bryan Larson <bryan.larson@jamf.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "chartist": "^0.10.1"
+  }
+}
