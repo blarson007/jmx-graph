@@ -2,6 +2,8 @@ package com.jmxgraph;
 
 import java.io.IOException;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -12,11 +14,11 @@ import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.jmxgraph.config.JmxConfig;
 import com.jmxgraph.config.PollScheduler;
-import com.jmxgraph.config.SingletonManager;
 import com.jmxgraph.config.TomcatManager;
 import com.jmxgraph.mbean.JmxAccessor;
-import com.jmxgraph.repository.JmxAttributeRepository;
+import com.jmxgraph.repository.JdbcAttributeRepository;
 import com.jmxgraph.repository.JmxAttributeRepositoryType;
 
 
@@ -58,27 +60,28 @@ public class Main {
 	private static void createAndRegisterRepository(CommandLine commandLine) {
 		JmxAttributeRepositoryType repositoryType = 
 		commandLine.getOptionValue("per") != null && commandLine.getOptionValue("per").equalsIgnoreCase("database") ? JmxAttributeRepositoryType.EMBEDDED_DB : JmxAttributeRepositoryType.IN_MEMORY_DB;
-		JmxAttributeRepository repository = repositoryType.createRepository();
+		DataSource dataSource = repositoryType.createDataSource();
 		
-		SingletonManager.setJmxAttributeRepository(repository);
+		JdbcAttributeRepository.getInstance().initialize(dataSource);
 	}
 	
 	private static void createAndRegisterJmxAccessor(CommandLine commandLine) throws NumberFormatException, IOException {
-		JmxAccessor jmxAccessor = new JmxAccessor(
+		JmxConfig jmxConfig = new JmxConfig(
 				commandLine.getOptionValue("host"), 
 				Integer.parseInt(commandLine.getOptionValue("port")), 
 				commandLine.getOptionValue("user"),
 				commandLine.getOptionValue("pass")
 		);
 		
-		SingletonManager.setJmxAccessor(jmxAccessor);
+		JmxAccessor.getInstance().initialize(jmxConfig);
 	}
 	
 	private static void createAndRegisterPollScheduler(CommandLine commandLine) throws SchedulerException, ParseException {
 		String pollIntervalInSeconds = commandLine.getOptionValue("jmx-poll-interval-sec");
-		PollScheduler pollScheduler = pollIntervalInSeconds != null ? new PollScheduler(Long.parseLong(pollIntervalInSeconds)) : new PollScheduler();
+		PollScheduler pollScheduler = PollScheduler.getInstance();
+		if (pollIntervalInSeconds != null) {
+			pollScheduler.initialize(Long.parseLong(pollIntervalInSeconds));
+		}
 		pollScheduler.scheduleJobExecution();
-		
-		SingletonManager.setPollScheduler(pollScheduler);
 	}
 }

@@ -30,7 +30,7 @@ public enum JmxAttributeRepositoryType {
 	
 	IN_MEMORY_DB {
 		@Override
-		public JmxAttributeRepository createRepository() {
+		public DataSource createDataSource() {
 			logger.warn("Setting up in-memory datasource");
 			
 			EmbeddedDatabase embeddedDatabase = new EmbeddedDatabaseBuilder()
@@ -49,13 +49,13 @@ public enum JmxAttributeRepositoryType {
 			
 			DatabaseManagerSwing.main(new String[] { "--url", "jdbc:hsqldb:mem:testdb", "--user", "sa", "--password", "" });
 			
-			return new JdbcAttributeRepository(hikariDataSource);
+			return hikariDataSource;
 		}
 	},
 	
 	EMBEDDED_DB {
 		@Override
-		public JmxAttributeRepository createRepository() {
+		public DataSource createDataSource() {
 			logger.warn("Setting up embedded datasource");
 			
 			boolean running = false;
@@ -81,13 +81,13 @@ public enum JmxAttributeRepositoryType {
 			HikariDataSource dataSource = new HikariDataSource(hikariConfig);
 			buildTables(dataSource);
 			
-			return new JdbcAttributeRepository(dataSource);
+			return dataSource;
 		}
 	};
 	
 	private static final Logger logger = LoggerFactory.getLogger(JmxAttributeRepositoryType.class);
 	
-	public abstract JmxAttributeRepository createRepository();
+	public abstract DataSource createDataSource();
 	
 	private static void registerShutdownHook(final HikariDataSource hikariDataSource) {
 		Runtime.getRuntime().addShutdownHook(new Thread() {

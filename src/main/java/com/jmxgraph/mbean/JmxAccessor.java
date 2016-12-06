@@ -23,22 +23,41 @@ import javax.management.remote.JMXServiceURL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.jmxgraph.config.JmxConfig;
 import com.jmxgraph.domain.JmxAttributePath;
+import com.jmxgraph.util.Initializable;
 
 
-public class JmxAccessor {
+public class JmxAccessor implements Initializable<JmxConfig> {
 	
 	private static final Logger logger = LoggerFactory.getLogger(JmxAccessor.class); 
 	
-	private MBeanServerConnection mBeanServerConnection;
+	private MBeanServerConnection mBeanServerConnection = null;
+	
+	private static JmxAccessor instance = null;
+	
+	public static JmxAccessor getInstance() {
+		synchronized(instance) {
+			if (instance == null) {
+				instance = new JmxAccessor();
+			}
+			return instance;
+		}
+	}
+	
+	@Override
+	public boolean isInitialized() {
+		return mBeanServerConnection != null;
+	}
 
-	public JmxAccessor(String jmxHost, int jmxPort, String username, String password) throws IOException {
-		JMXServiceURL serviceUrl = new JMXServiceURL(buildJmxUrl(jmxHost, jmxPort));
+	@Override
+	public void initialize(JmxConfig jmxConfig) throws IOException {
+		JMXServiceURL serviceUrl = new JMXServiceURL(buildJmxUrl(jmxConfig.getHost(), jmxConfig.getPort()));
 		
 		Map<String, String[]> env = null;
-		if (username != null && password != null) {
+		if (jmxConfig.getUsername() != null && jmxConfig.getPassword() != null) {
 			env = new HashMap<>();
-			env.put(JMXConnector.CREDENTIALS, new String[] { username, password });
+			env.put(JMXConnector.CREDENTIALS, new String[] { jmxConfig.getUsername(), jmxConfig.getPassword() });
 		}	
 		
 		final JMXConnector jmxConnector = JMXConnectorFactory.connect(serviceUrl, env);

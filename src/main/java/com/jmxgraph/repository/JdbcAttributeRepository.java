@@ -20,11 +20,28 @@ import com.jmxgraph.ui.GraphFilter;
 
 public class JdbcAttributeRepository implements JmxAttributeRepository {
 	
-	private JdbcTemplate jdbcTemplate;
+	private JdbcTemplate jdbcTemplate = null;
 	private JmxAttributeResultSetExtractor jmxAttributeResultSetExtractor;
 	private JmxAttributePathRowMapper jmxAttributePathRowMapper;
 	
-	public JdbcAttributeRepository(DataSource dataSource) {
+	private static JdbcAttributeRepository instance = null;
+	
+	public static JdbcAttributeRepository getInstance() {
+		synchronized(instance) {
+			if (instance == null) {
+				instance = new JdbcAttributeRepository();
+			}
+			return instance;
+		}
+	}
+	
+	@Override
+	public boolean isInitialized() {
+		return jdbcTemplate != null;
+	}
+	
+	@Override
+	public void initialize(DataSource dataSource) {
 		jdbcTemplate = new JdbcTemplate(dataSource);
 		jmxAttributeResultSetExtractor = new JmxAttributeResultSetExtractor();
 		jmxAttributePathRowMapper = new JmxAttributePathRowMapper();
