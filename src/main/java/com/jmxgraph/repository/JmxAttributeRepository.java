@@ -2,24 +2,29 @@ package com.jmxgraph.repository;
 
 import java.util.Collection;
 
-import com.jmxgraph.domain.JmxAttributePath;
+import com.jmxgraph.domain.JmxAttribute;
 import com.jmxgraph.domain.JmxAttributeValue;
+import com.jmxgraph.domain.JmxObjectName;
 import com.jmxgraph.ui.GraphFilter;
 
 
 public interface JmxAttributeRepository {
 
-	void insertJmxAttributePath(JmxAttributePath jmxAttributePath);
+	void insertJmxObjectName(JmxObjectName jmxAttributePath);
+	
+	void insertJmxAttribute(final int objectNameId, final JmxAttribute jmxAttribute);
 	
 	void insertJmxAttributeValue(JmxAttributeValue jmxAttributeValue) throws Exception;
 	
-	Collection<JmxAttributePath> getAllJmxAttributeValues();
+//	Collection<JmxObjectName> getAllJmxAttributeValues();
 	
-	JmxAttributePath getJmxAttributeValuesByPathId(final int pathId, GraphFilter filter);
+	JmxAttribute getJmxAttributeValuesByAttributeId(final int attributeId, GraphFilter filter);
 	
-	Collection<JmxAttributePath> getAllEnabledAttributePaths();
+	Collection<JmxObjectName> getAllEnabledAttributePaths();
 	
-	JmxAttributePath getJmxAttributePath(String objectName, String attribute);
+	JmxObjectName getJmxObjectName(String objectName);
+	
+	JmxAttribute getJmxAttribute(final int objectNameId, String attributeName);
 	
 	void enableJmxAttributePath(int pathId);
 	

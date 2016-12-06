@@ -25,7 +25,7 @@ public class LoadJmxStuffServlet extends HttpServlet {
 		
 		JmxAccessor jmxAccessor = SingletonManager.getJmxAccessor();
 		try {
-			jmxAccessor.getAllAvailablePathsWithAttributes();
+			jmxAccessor.getAllAvailableObjectsWithAttributes();
 		} catch (InstanceNotFoundException | IntrospectionException | ReflectionException e) {
 			e.printStackTrace();
 		}

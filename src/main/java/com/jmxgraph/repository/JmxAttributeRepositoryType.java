@@ -81,6 +81,8 @@ public enum JmxAttributeRepositoryType {
 			HikariDataSource dataSource = new HikariDataSource(hikariConfig);
 			buildTables(dataSource);
 			
+			DatabaseManagerSwing.main(new String[] { "--url", "jdbc:hsqldb:hsql://localhost:9001/jmx", "--user", "sa", "--password", "" });
+			
 			return new JdbcAttributeRepository(dataSource);
 		}
 	};

@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 import com.jmxgraph.config.SingletonManager;
-import com.jmxgraph.domain.JmxAttributePath;
+import com.jmxgraph.domain.JmxAttribute;
 import com.jmxgraph.repository.JmxAttributeRepository;
 import com.jmxgraph.ui.GraphFilter;
 
@@ -27,14 +27,14 @@ public class JmxAttributeSelectionServlet extends HttpServlet {
 		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/jsp/jmx-mbean-selection.jsp");
 		JmxAttributeRepository repository = SingletonManager.getJmxAttributeRepository();
 		
-		String pathId = request.getParameter("pathId");
-		if (pathId != null) {
+		String attributeId = request.getParameter("attributeId");
+		if (attributeId != null) {
 			String filterId = request.getParameter("filterId");
 			GraphFilter filter = filterId == null ? GraphFilter.NOW : GraphFilter.getFilterById(Integer.parseInt(filterId));
 			
-			JmxAttributePath attributePath = repository.getJmxAttributeValuesByPathId(Integer.parseInt(pathId), filter);
+			JmxAttribute attribute = repository.getJmxAttributeValuesByAttributeId(Integer.parseInt(attributeId), filter);
 
-			String jsonResponse = gson.toJson(attributePath.getGraphObject());
+			String jsonResponse = gson.toJson(attribute.getGraphObject());
 			System.out.println(jsonResponse);
 			
 			response.setContentType("application/json");

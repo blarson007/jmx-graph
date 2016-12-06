@@ -13,7 +13,7 @@
     	</jsp:include>
     	<script src="../bower_components/chartist/dist/chartist.min.js"></script>
     	<script>
-    		var currentPaths = [];
+    		var currentAttributes = [];
     		
     		var options = {
    				axisX: {
@@ -29,31 +29,31 @@
     			pollGraph();
     		});
     	
-    		function showHideGraph(pathId) {
-				var buttonTxt = $('#showHide' + pathId).text();
+    		function showHideGraph(attributeId) {
+				var buttonTxt = $('#showHide' + attributeId).text();
 				
     			if (buttonTxt == 'View') {
-    				$('#showHide' + pathId).html('Hide');
+    				$('#showHide' + attributeId).html('Hide');
     				
-    				executeGet(pathId);
+    				executeGet(attributeId);
     				
-    				if ($.inArray(pathId, currentPaths) == -1) {
-    					currentPaths.push(pathId);
+    				if ($.inArray(attributeId, currentAttributes) == -1) {
+    					currentAttributes.push(attributeId);
     				}
     			} else {
-    				$('#graph' + pathId).html('');
-    				$('#showHide' + pathId).html('View');
+    				$('#graph' + attributeId).html('');
+    				$('#showHide' + attributeId).html('View');
     				
-    				removePath(pathId);
+    				removePath(attributeId);
     			}
     		}
     		
     		function pollGraph() {
     			try {
-	   				for (i = 0; i < currentPaths.length; i++) {
-	   					var pathId = currentPaths[i];
+	   				for (i = 0; i < currentAttributes.length; i++) {
+	   					var attributeId = currentAttributes[i];
 	   				
-	   					executeGet(pathId);
+	   					executeGet(attributeId);
 	   				}
 	   				setTimeout(pollGraph, ${pollIntervalMs});
     			} catch (err) {
@@ -61,32 +61,32 @@
     			}	
     		}
     		
-    		function executeGet(pathId) {
-    			var filterId = $('#pathFilter' + pathId).val();
+    		function executeGet(attributeId) {
+    			var filterId = $('#attributeFilter' + attributeId).val();
     			$.get('jmx-attribute-selection.html', {
-					pathId: pathId,
+					attributeId: attributeId,
 					filterId: filterId
 				}, function(jsonResponse) {
 					if (jsonResponse.errorMessage != null) {
-						$('#graph' + pathId).html(jsonResponse.errorMessage);
-						removePath(pathId);
+						$('#graph' + attributeId).html(jsonResponse.errorMessage);
+						removePath(attributeId);
 					} else {
-						new Chartist.Line('#graph' + pathId, jsonResponse);
+						new Chartist.Line('#graph' + attributeId, jsonResponse);
 					}
 				});
     		}
     		
-    		function removePath(pathId) {
-    			var index = $.inArray(pathId, currentPaths);
+    		function removePath(attributeId) {
+    			var index = $.inArray(attributeId, currentAttributes);
 	       		if (index > -1) {
-	       			currentPaths.splice(index, 1);
+	       			currentAttributes.splice(index, 1);
 	       		}
     		}
     		
-    		function setFilter(pathId, filterId) {
-    			$('#pathFilter' + pathId).val(filterId);
-    			if ($('#showHide' + pathId).text() == 'Hide') {
-    				executeGet(pathId);
+    		function setFilter(attributeId, filterId) {
+    			$('#attributeFilter' + attributeId).val(filterId);
+    			if ($('#showHide' + attributeId).text() == 'Hide') {
+    				executeGet(attributeId);
     			}
     		}
     	</script>	
@@ -101,28 +101,29 @@
                         <td></td>
                     </tr>
                 </thead>
-                <c:forEach var="jmxAttributePath" items="${jmxList}">
-                    <c:set var="classSuccess" value=""/>
-                    <tr class="${classSuccess}">
-                        <td>${jmxAttributePath.objectName}</td>
-                        <td>${jmxAttributePath.attribute}</td>
-                        <td class="dropdown">
-                        	<button id="pathFilter${jmxAttributePath.pathId}" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" value="1">Filter&nbsp;<span class="caret"></span></button>
-						    <ul class="dropdown-menu">
-						    	<c:forEach var="filter" items="${filters}">
-						    		<li role="presentation" class="${liClass}">
-						    			<a role="menuitem" href="#" onclick="setFilter('${jmxAttributePath.pathId}', '${filter.filterId}');">${filter.description}</a>
-						    		</li>
-						    	</c:forEach>
-						    </ul>
-                        </td>
-                        <td>
-                        	<button id="showHide${jmxAttributePath.pathId}" type="submit" class="btn btn-primary" onclick="showHideGraph('${jmxAttributePath.pathId}');">View</button>
-                        </td>
-                    </tr>
-                    <tr>
-                    	<td colspan="3" id="graph${jmxAttributePath.pathId}"></td>
-                    </tr>
+                <c:forEach var="jmxObjectName" items="${jmxList}">
+                	<c:forEach var="jmxAttribute" items="${jmxObjectName.attributes}">
+	                    <tr>
+	                        <td>${jmxObjectName.canonicalName}</td>
+	                        <td>${jmxAttribute.attributeName}</td>
+	                        <td class="dropdown">
+	                        	<button id="attributeFilter${jmxAttribute.attributeId}" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" value="1">Filter&nbsp;<span class="caret"></span></button>
+							    <ul class="dropdown-menu">
+							    	<c:forEach var="filter" items="${filters}">
+							    		<li role="presentation" class="${liClass}">
+							    			<a role="menuitem" href="#" onclick="setFilter('${jmxAttribute.attributeId}', '${filter.filterId}');">${filter.description}</a>
+							    		</li>
+							    	</c:forEach>
+							    </ul>
+	                        </td>
+	                        <td>
+	                        	<button id="showHide${jmxAttribute.attributeId}" type="submit" class="btn btn-primary" onclick="showHideGraph('${jmxAttribute.attributeId}');">View</button>
+	                        </td>
+	                    </tr>
+	                    <tr>
+	                    	<td colspan="3" id="graph${jmxAttribute.attributeId}"></td>
+	                    </tr>
+                    </c:forEach>
                 </c:forEach>               
             </table>
         </div>

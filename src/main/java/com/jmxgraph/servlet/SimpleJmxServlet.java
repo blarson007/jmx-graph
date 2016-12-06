@@ -9,9 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.jmxgraph.config.SingletonManager;
-import com.jmxgraph.repository.JmxAttributeRepository;
-
 
 @WebServlet(name = "SimpleJmxServlet", urlPatterns = { "/simple-jmx.html" })
 public class SimpleJmxServlet extends HttpServlet {
@@ -22,8 +19,8 @@ public class SimpleJmxServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/jsp/list-all-jmx.jsp");
 		
-		JmxAttributeRepository repository = SingletonManager.getJmxAttributeRepository();
-		request.setAttribute("jmxList", repository.getAllJmxAttributeValues());
+//		JmxAttributeRepository repository = SingletonManager.getJmxAttributeRepository();
+//		request.setAttribute("jmxList", repository.get
 		
 		dispatcher.forward(request, response);
 	}
