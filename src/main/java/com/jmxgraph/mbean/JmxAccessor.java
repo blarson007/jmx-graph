@@ -23,7 +23,8 @@ import javax.management.remote.JMXServiceURL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jmxgraph.domain.JmxAttributePath;
+import com.jmxgraph.domain.JmxAttribute;
+import com.jmxgraph.domain.JmxObjectName;
 
 
 public class JmxAccessor {
@@ -52,43 +53,36 @@ public class JmxAccessor {
 		return mBeanServerConnection.getAttribute(new ObjectName(objectName), attribute);
 	}
 	
-	public Set<JmxAttributePath> getAllAvailablePathsWithAttributes() throws IOException, InstanceNotFoundException, IntrospectionException, ReflectionException {
-		Set<JmxAttributePath> attributePaths = new HashSet<>();
+	public Set<JmxObjectName> getAllAvailableObjectsWithAttributes() throws IOException, InstanceNotFoundException, IntrospectionException, ReflectionException {
+		Set<JmxObjectName> objectNames = new HashSet<>();
 		Set<ObjectName> names = mBeanServerConnection.queryNames(null, null);
 		
 		for (ObjectName objectName : names) {
 			final MBeanInfo info = mBeanServerConnection.getMBeanInfo(objectName);
+			
+			Set<JmxAttribute> attributes = new HashSet<>();
 			for (MBeanAttributeInfo attributeInfo : info.getAttributes()) {
-				attributePaths.add(new JmxAttributePath(objectName.getCanonicalName(), attributeInfo.getName(), attributeInfo.getType()));
+				attributes.add(new JmxAttribute(attributeInfo.getName(), attributeInfo.getType()));
 			}
+			
+			objectNames.add(new JmxObjectName(objectName.getCanonicalName(), info.getDescription(), attributes));
 		}
 		
-		return attributePaths;
+		return objectNames;
 	}
 	
-	public Set<String> getAllObjectNames() throws IOException, InstanceNotFoundException, IntrospectionException, ReflectionException {
-		Set<String> attributePaths = new HashSet<>();
-		Set<ObjectName> names = mBeanServerConnection.queryNames(null, null);
-		
-		for (ObjectName objectName : names) {
-			attributePaths.add(objectName.getCanonicalName());
-		}
-		
-		return attributePaths;
-	}
-	
-	public Set<JmxAttributePath> getAttributePathsForObjectName(String canonicalObjectName) throws MalformedObjectNameException, 
-			InstanceNotFoundException, IntrospectionException, ReflectionException, IOException {
-		Set<JmxAttributePath> attributePaths = new HashSet<>();
-		ObjectName objectName = new ObjectName(canonicalObjectName);
-		
-		final MBeanInfo info = mBeanServerConnection.getMBeanInfo(objectName);
-		for (MBeanAttributeInfo attributeInfo : info.getAttributes()) {
-			attributePaths.add(new JmxAttributePath(objectName.getCanonicalName(), attributeInfo.getName(), attributeInfo.getType()));
-		}
-		
-		return attributePaths;
-	}
+//	public Set<JmxAttributePath> getAttributePathsForObjectName(String canonicalObjectName) throws MalformedObjectNameException, 
+//			InstanceNotFoundException, IntrospectionException, ReflectionException, IOException {
+//		Set<JmxAttributePath> attributePaths = new HashSet<>();
+//		ObjectName objectName = new ObjectName(canonicalObjectName);
+//		
+//		final MBeanInfo info = mBeanServerConnection.getMBeanInfo(objectName);
+//		for (MBeanAttributeInfo attributeInfo : info.getAttributes()) {
+//			attributePaths.add(new JmxAttributePath(objectName.getCanonicalName(), attributeInfo.getName(), attributeInfo.getType()));
+//		}
+//		
+//		return attributePaths;
+//	}
 	
 	private String buildJmxUrl(String host, int port) {
 		return "service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi";

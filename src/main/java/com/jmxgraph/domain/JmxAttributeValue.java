@@ -6,17 +6,17 @@ import java.util.Date;
 public class JmxAttributeValue implements Comparable<JmxAttributeValue> {
 
 	private int valueId;
-	private int pathId;
+	private int attributeId;
 	private Object attributeValue;
 	private Date timestamp;
 	
-	public JmxAttributeValue(int pathId, Object attributeValue, Date timestamp) {
-		this(-1, pathId, attributeValue, timestamp);
+	public JmxAttributeValue(int attributeId, Object attributeValue, Date timestamp) {
+		this(-1, attributeId, attributeValue, timestamp);
 	}
 	
-	public JmxAttributeValue(int valueId, int pathId, Object attributeValue, Date timestamp) {
+	public JmxAttributeValue(int valueId, int attributeId, Object attributeValue, Date timestamp) {
 		this.valueId = valueId;
-		this.pathId = pathId;
+		this.attributeId = attributeId;
 		this.attributeValue = attributeValue;
 		this.timestamp = timestamp;
 	}
@@ -25,8 +25,8 @@ public class JmxAttributeValue implements Comparable<JmxAttributeValue> {
 		return valueId;
 	}
 	
-	public int getPathId() {
-		return pathId;
+	public int getAttributeId() {
+		return attributeId;
 	}
 	
 	public Object getAttributeValue() {

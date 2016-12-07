@@ -11,22 +11,22 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.jmxgraph.config.SingletonManager;
 import com.jmxgraph.repository.JmxAttributeRepository;
+import com.jmxgraph.ui.GraphFilter;
 
+@WebServlet(name = "JmxAttributeGraphServlet", urlPatterns = { "/jmx-attribute-selection.html" })
+public class JmxAttributeGraphServlet extends HttpServlet {
 
-@WebServlet(name = "SimpleJmxServlet", urlPatterns = { "/simple-jmx.html" })
-public class SimpleJmxServlet extends HttpServlet {
-
-	private static final long serialVersionUID = 6215889008198024545L;
+	private static final long serialVersionUID = 2492396971460048886L;
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/jsp/list-all-jmx.jsp");
-		
+		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/jsp/jmx-mbean-graph.jsp");
 		JmxAttributeRepository repository = SingletonManager.getJmxAttributeRepository();
-		request.setAttribute("jmxList", repository.getAllJmxAttributeValues());
+		
+		request.setAttribute("pollIntervalMs", SingletonManager.getPollScheduler().getPollIntervalInSeconds() * 1000);
+		request.setAttribute("filters", GraphFilter.values());
+		request.setAttribute("jmxList", repository.getAllEnabledAttributePaths());
 		
 		dispatcher.forward(request, response);
 	}
-	
-	
 }
