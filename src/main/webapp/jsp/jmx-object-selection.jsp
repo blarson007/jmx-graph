@@ -50,30 +50,31 @@
        						<td style="background-color: white;">${objectName.objectNameShortened}</td>
        						<td><button class="btn btn-info" type="button" data-toggle="modal" data-target="#myModal${objectNameIndex.index}">Expand</button></td>
        					</tr>
-       					<div class="modal fade" id="myModal${objectNameIndex.index}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+       					<div class="modal modal-lg fade" id="myModal${objectNameIndex.index}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 						  <div class="modal-dialog" role="document">
-						    <div class="modal-content">
+						    <div class="modal-content" style="display: table;">
 						      <div class="modal-header">
 						        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						          <span aria-hidden="true">&times;</span>
 						        </button>
-						        <h4 class="modal-title">Modal title</h4>
+						        <h4 class="modal-title">Select Attributes</h4>
 						      </div>
 						      <div class="modal-body">
 						        <div class="container">
 						          <div>
 				                    <div class="row">
-				                        <div class="col-xs-2 col-sm-2">Attribute Name</div>
-				                        <div class="col-xs-2 col-sm-2">Attribute Type</div>
-				                        <div class="col-xs-2 col-sm-2"></div>
+				                        <div class="col-xs-2 col-sm-2 col-lg-3">Attribute Name</div>
+				                        <div class="col-xs-2 col-sm-2 col-lg-3">Attribute Type</div>
+				                        <div class="col-xs-2 col-sm-2 col-lg-3"></div>
 				                    </div>
+				                    <div class="divider">&nbsp;</div>
 				                  </div>
 						          <c:forEach var="attribute" items="${objectName.attributes}" varStatus="attributeIndex">
 						            <c:set var="buttonText" value="Select" />
 						            <div class="row">
-						              <div class="col-xs-2 col-sm-2">${attribute.attributeName}</div>
-						              <div class="col-xs-2 col-sm-2">${attribute.attributeType}</div>
-						              <div class="col-xs-2 col-sm-2">
+						              <div class="col-xs-2 col-sm-2 col-lg-3" style="vertical-align: middle">${attribute.attributeName}</div>
+						              <div class="col-xs-2 col-sm-2 col-lg-3" style="vertical-align: middle">${attribute.attributeType}</div>
+						              <div class="col-xs-2 col-sm-2 col-lg-3">
 						                <button id="attribute${attributeIndex.index}" type="button" class="btn btn-primary" 
 		                        			onclick="toggleSubscribe('${objectName.objectNameEscaped}', '${attribute.attributeName}', '${attribute.attributeType}', '${attributeIndex.index}');">${buttonText}</button>
 						              </div>

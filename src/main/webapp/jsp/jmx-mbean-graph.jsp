@@ -63,7 +63,7 @@
     		
     		function executeGet(attributeId) {
     			var filterId = $('#attributeFilter' + attributeId).val();
-    			$.get('jmx-attribute-selection.html', {
+    			$.get('jmx-attribute-graph-ajax.html', {
 					attributeId: attributeId,
 					filterId: filterId
 				}, function(jsonResponse) {

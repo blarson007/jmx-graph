@@ -12,7 +12,8 @@ CREATE TABLE jmx_attribute (
 	attribute_type	VARCHAR(50),
 	path			VARCHAR(50),
 	enabled			INTEGER DEFAULT 1,
-	FOREIGN KEY(object_name_id) REFERENCES jmx_object_name(object_name_id)
+	FOREIGN KEY(object_name_id) REFERENCES jmx_object_name(object_name_id),
+	UNIQUE(object_name_id, attribute_name)
 );
 
 CREATE TABLE jmx_attribute_value (

@@ -90,7 +90,6 @@ public class ObjectNameSelectionServlet extends HttpServlet {
 			}
 		} catch (EmptyResultDataAccessException e) {
 			logger.debug("Attribute " + attributeName + " was not found in the database. Persisting attribute.");
-//			repository.insertJmxAttributePath(new JmxAttributePath(objectName, attribute, attributeType));
 			if (jmxObjectName == null) {
 				Set<JmxAttribute> attributes = new HashSet<>();
 				JmxAttribute attributeToInsert = new JmxAttribute(attributeName, attributeType);
