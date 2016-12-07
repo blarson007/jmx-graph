@@ -71,17 +71,6 @@ public class JmxAccessor {
 		return objectNames;
 	}
 	
-	public Set<String> getAllObjectNames() throws IOException, InstanceNotFoundException, IntrospectionException, ReflectionException {
-		Set<String> attributePaths = new HashSet<>();
-		Set<ObjectName> names = mBeanServerConnection.queryNames(null, null);
-		
-		for (ObjectName objectName : names) {
-			attributePaths.add(objectName.getCanonicalName());
-		}
-		
-		return attributePaths;
-	}
-	
 //	public Set<JmxAttributePath> getAttributePathsForObjectName(String canonicalObjectName) throws MalformedObjectNameException, 
 //			InstanceNotFoundException, IntrospectionException, ReflectionException, IOException {
 //		Set<JmxAttributePath> attributePaths = new HashSet<>();

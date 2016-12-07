@@ -17,14 +17,6 @@ public class JmxAttribute {
 	private boolean enabled = true;
 	private Collection<JmxAttributeValue> attributeValues = new TreeSet<>();
 	
-//	public JmxAttribute(String objectName, String attribute, String attributeType) {
-//		this(objectName, attribute, attributeType, null);
-//	}
-	
-//	public JmxAttribute(String objectName, String attribute, String attributeType, String path) {
-//		this(-1, objectName, attribute, attributeType, path, true);
-//	}
-	
 	public JmxAttribute(int attributeId, int objectNameId, String attributeName, String attributeType, String path, boolean enabled) {
 		this(attributeName, attributeType);
 		this.attributeId = attributeId;
