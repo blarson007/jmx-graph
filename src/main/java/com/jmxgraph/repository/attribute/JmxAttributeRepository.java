@@ -1,14 +1,17 @@
-package com.jmxgraph.repository;
+package com.jmxgraph.repository.attribute;
 
 import java.util.Collection;
 
+import javax.sql.DataSource;
+
+import com.jmxgraph.config.Initializable;
 import com.jmxgraph.domain.JmxAttribute;
 import com.jmxgraph.domain.JmxAttributeValue;
 import com.jmxgraph.domain.JmxObjectName;
 import com.jmxgraph.ui.GraphFilter;
 
 
-public interface JmxAttributeRepository {
+public interface JmxAttributeRepository extends Initializable<DataSource> {
 
 	void insertJmxObjectName(JmxObjectName jmxAttributePath);
 	

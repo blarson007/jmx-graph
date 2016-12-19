@@ -1,4 +1,4 @@
-package com.jmxgraph.repository;
+package com.jmxgraph.repository.attribute;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,10 +31,26 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 	private JmxAttributeResultSetExtractor jmxAttributeResultSetExtractor;
 //	private JmxAttributePathRowMapper jmxAttributePathRowMapper;
 	
-	public JdbcAttributeRepository(DataSource dataSource) {
+	private JdbcAttributeRepository() {  }
+	
+	private static class InstanceHolder {
+		private static final JdbcAttributeRepository instance = new JdbcAttributeRepository();
+	}
+	
+	public static JdbcAttributeRepository getInstance() {
+		return InstanceHolder.instance;
+	}
+	
+	@Override
+	public void initialize(DataSource dataSource) {
 		jdbcTemplate = new JdbcTemplate(dataSource);
 		jmxAttributeResultSetExtractor = new JmxAttributeResultSetExtractor();
 //		jmxAttributePathRowMapper = new JmxAttributePathRowMapper();
+	}
+	
+	@Override
+	public boolean isInitialized() {
+		return jdbcTemplate != null;
 	}
 	
 	@Override

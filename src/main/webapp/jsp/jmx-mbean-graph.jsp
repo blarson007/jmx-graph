@@ -92,40 +92,58 @@
     	</script>	
         <div class="container">
             <h2>Attributes</h2>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <td>Object Name</td>
-                        <td>Attribute</td>
-                        <td>Filter</td>
-                        <td></td>
-                    </tr>
-                </thead>
-                <c:forEach var="jmxObjectName" items="${jmxList}">
-                	<c:forEach var="jmxAttribute" items="${jmxObjectName.attributes}">
-	                    <tr>
-	                        <td>${jmxObjectName.canonicalName}</td>
-	                        <td>${jmxAttribute.attributeName}</td>
-	                        <td class="dropdown">
-	                        	<button id="attributeFilter${jmxAttribute.attributeId}" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" value="1">Filter&nbsp;<span class="caret"></span></button>
-							    <ul class="dropdown-menu">
-							    	<c:forEach var="filter" items="${filters}">
-							    		<li role="presentation" class="${liClass}">
-							    			<a role="menuitem" href="#" onclick="setFilter('${jmxAttribute.attributeId}', '${filter.filterId}');">${filter.description}</a>
-							    		</li>
-							    	</c:forEach>
-							    </ul>
-	                        </td>
-	                        <td>
-	                        	<button id="showHide${jmxAttribute.attributeId}" type="submit" class="btn btn-primary" onclick="showHideGraph('${jmxAttribute.attributeId}');">View</button>
-	                        </td>
-	                    </tr>
-	                    <tr>
-	                    	<td colspan="3" id="graph${jmxAttribute.attributeId}"></td>
-	                    </tr>
-                    </c:forEach>
-                </c:forEach>               
-            </table>
+            <c:choose>
+				<c:when test="${empty jmxConfigured}">
+	            	<table class="table">
+	            		<tr>
+	            			<td>The JMX connection has not yet been configured. Visit the <a href="/configuration.html">Configuration</a> page to connect to JMX.</td>
+	            		</tr>
+	            	</table>
+	            </c:when>
+	            <c:when test="${empty jmxObjectsSubscribed}">
+	            	<table class="table">
+	            		<tr>
+	            			<td>No JMX attributes have been selected for monitoring. Visit the <a href="/object-name-selection.html">MBean</a> page to select attributes to monitor.</td>
+	            		</tr>
+	            	</table>
+	            </c:when>
+            	<c:otherwise>
+		            <table class="table table-striped">
+		                <thead>
+		                    <tr>
+		                        <td>Object Name</td>
+		                        <td>Attribute</td>
+		                        <td>Filter</td>
+		                        <td></td>
+		                    </tr>
+		                </thead>
+		                <c:forEach var="jmxObjectName" items="${jmxList}">
+		                	<c:forEach var="jmxAttribute" items="${jmxObjectName.attributes}">
+			                    <tr>
+			                        <td>${jmxObjectName.canonicalName}</td>
+			                        <td>${jmxAttribute.attributeName}</td>
+			                        <td class="dropdown">
+			                        	<button id="attributeFilter${jmxAttribute.attributeId}" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" value="1">Filter&nbsp;<span class="caret"></span></button>
+									    <ul class="dropdown-menu">
+									    	<c:forEach var="filter" items="${filters}">
+									    		<li role="presentation" class="${liClass}">
+									    			<a role="menuitem" href="#" onclick="setFilter('${jmxAttribute.attributeId}', '${filter.filterId}');">${filter.description}</a>
+									    		</li>
+									    	</c:forEach>
+									    </ul>
+			                        </td>
+			                        <td>
+			                        	<button id="showHide${jmxAttribute.attributeId}" type="submit" class="btn btn-primary" onclick="showHideGraph('${jmxAttribute.attributeId}');">View</button>
+			                        </td>
+			                    </tr>
+			                    <tr>
+			                    	<td colspan="3" id="graph${jmxAttribute.attributeId}"></td>
+			                    </tr>
+		                    </c:forEach>
+		                </c:forEach>               
+		            </table>
+				</c:otherwise> 
+			</c:choose>
         </div>
     </body>
 </html>

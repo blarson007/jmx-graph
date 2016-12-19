@@ -1,4 +1,4 @@
-package com.jmxgraph.config;
+package com.jmxgraph.businessaction;
 
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -13,25 +13,42 @@ import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
 import com.jmxgraph.client.JmxClientJob;
+import com.jmxgraph.config.Initializable;
 
 
-public class PollScheduler {
+public class PollScheduler implements Initializable<Integer> {
 	
-	private static final long DEFAULT_POLL_INTERVAL_IN_SECONDS = 5;
-
-	private long pollIntervalInSeconds;
+	private int pollIntervalInSeconds;
+	private Scheduler scheduler;
 	
-	public PollScheduler() {
-		pollIntervalInSeconds = DEFAULT_POLL_INTERVAL_IN_SECONDS;
+	private PollScheduler() {  }
+	
+	private static class InstanceHolder {
+		private static final PollScheduler instance = new PollScheduler();
 	}
 	
-	public PollScheduler(long pollIntervalInSeconds) {
+	public static PollScheduler getInstance() {
+		return InstanceHolder.instance;
+	}
+	
+	@Override
+	public void initialize(Integer pollIntervalInSeconds) throws SchedulerException, ParseException {
 		this.pollIntervalInSeconds = pollIntervalInSeconds;
+		scheduleJobExecution();
 	}
 	
-	public void scheduleJobExecution() throws SchedulerException, ParseException {
+	@Override
+	public boolean isInitialized() {
+		try {
+			return scheduler != null && scheduler.isStarted();
+		} catch (SchedulerException e) {
+			return false;
+		}
+	}
+	
+	private void scheduleJobExecution() throws SchedulerException, ParseException {
 		SchedulerFactory schedulerFactory = new StdSchedulerFactory();
-	    Scheduler scheduler = schedulerFactory.getScheduler();
+	    scheduler = schedulerFactory.getScheduler();
 	    
 	    scheduler.start();
 	    
@@ -52,5 +69,9 @@ public class PollScheduler {
 	
 	public long getPollIntervalInSeconds() {
 		return pollIntervalInSeconds;
+	}
+	
+	public void stopJobExection() throws SchedulerException {
+		scheduler.shutdown(true);
 	}
 }

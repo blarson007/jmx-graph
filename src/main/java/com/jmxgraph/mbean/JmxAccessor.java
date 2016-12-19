@@ -19,33 +19,55 @@ import javax.management.ReflectionException;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import javax.naming.ServiceUnavailableException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.jmxgraph.config.Initializable;
 import com.jmxgraph.domain.JmxAttribute;
+import com.jmxgraph.domain.JmxConnectionConfig;
 import com.jmxgraph.domain.JmxObjectName;
+import com.jmxgraph.ui.JmxTestResult;
+import com.jmxgraph.ui.JmxTestResult.StatusCode;
 
-
-public class JmxAccessor {
+public class JmxAccessor implements Initializable<JmxConnectionConfig> {
 	
-	private static final Logger logger = LoggerFactory.getLogger(JmxAccessor.class); 
+	private static final Logger logger = LoggerFactory.getLogger(JmxAccessor.class);
 	
+	private JMXConnector jmxConnector;
 	private MBeanServerConnection mBeanServerConnection;
-
-	public JmxAccessor(String jmxHost, int jmxPort, String username, String password) throws IOException {
-		JMXServiceURL serviceUrl = new JMXServiceURL(buildJmxUrl(jmxHost, jmxPort));
+	
+	private JmxAccessor() {  }
+	
+	private static class InstanceHolder {
+		private static final JmxAccessor instance = new JmxAccessor();
+	}
+	
+	public static JmxAccessor getInstance() {
+		return InstanceHolder.instance;
+	}
+	
+	@Override
+	public boolean isInitialized() {
+		return jmxConnector != null && mBeanServerConnection != null;
+	}
+	
+	public void initialize(JmxConnectionConfig config, boolean registerShutdownHook) throws Exception {
+		JMXServiceURL serviceUrl = new JMXServiceURL(buildJmxUrl(config.getJmxHost(), config.getJmxPort()));
+		Map<String, String[]> env = getConnectionEnv(config.getJmxUsername(), config.getJmxPassword());
 		
-		Map<String, String[]> env = null;
-		if (username != null && password != null) {
-			env = new HashMap<>();
-			env.put(JMXConnector.CREDENTIALS, new String[] { username, password });
-		}	
-		
-		final JMXConnector jmxConnector = JMXConnectorFactory.connect(serviceUrl, env);
+		jmxConnector = JMXConnectorFactory.connect(serviceUrl, env);
 		mBeanServerConnection = jmxConnector.getMBeanServerConnection();
 		
-		registerShutdownHook(jmxConnector);
+		if (registerShutdownHook) {
+			registerShutdownHook(this);
+		}	
+	}
+
+	@Override
+	public void initialize(JmxConnectionConfig config) throws Exception {
+		initialize(config, true);
 	}
 	
 	public Object getAttributeValue(String objectName, String attribute) throws MalformedObjectNameException, 
@@ -71,34 +93,51 @@ public class JmxAccessor {
 		return objectNames;
 	}
 	
-//	public Set<JmxAttributePath> getAttributePathsForObjectName(String canonicalObjectName) throws MalformedObjectNameException, 
-//			InstanceNotFoundException, IntrospectionException, ReflectionException, IOException {
-//		Set<JmxAttributePath> attributePaths = new HashSet<>();
-//		ObjectName objectName = new ObjectName(canonicalObjectName);
-//		
-//		final MBeanInfo info = mBeanServerConnection.getMBeanInfo(objectName);
-//		for (MBeanAttributeInfo attributeInfo : info.getAttributes()) {
-//			attributePaths.add(new JmxAttributePath(objectName.getCanonicalName(), attributeInfo.getName(), attributeInfo.getType()));
-//		}
-//		
-//		return attributePaths;
-//	}
+	public void shutdown() {
+		try {
+			logger.warn("Closing jmx connection");
+			jmxConnector.close();
+		} catch (IOException e) {
+			logger.error("", e);
+		}
+	}
 	
 	private String buildJmxUrl(String host, int port) {
 		return "service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi";
 	}
 	
-	private void registerShutdownHook(final JMXConnector jmxConnector) {
+	private Map<String, String[]> getConnectionEnv(String jmxUsername, String jmxPassword) {
+		Map<String, String[]> env = null;
+		if (jmxUsername != null && jmxPassword != null) {
+			env = new HashMap<>();
+			env.put(JMXConnector.CREDENTIALS, new String[] { jmxUsername, jmxPassword });
+		}
+		return env;
+	}
+	
+	private void registerShutdownHook(final JmxAccessor jmxAccessor) {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
-				try {
-					logger.warn("Closing jmx connection");
-					jmxConnector.close();
-				} catch (IOException e) {
-					logger.error("", e);
-				}
+				jmxAccessor.shutdown();
 			}	
 		});
+	}
+	
+	public static JmxTestResult testJmxConnection(JmxConnectionConfig config) {
+		JmxAccessor jmxAccessor = null;
+		try {
+			jmxAccessor = new JmxAccessor();
+			jmxAccessor.initialize(config, false);
+			return new JmxTestResult(StatusCode.SUCCESS, "The JMX Connection info is correct");
+		} catch (ServiceUnavailableException e) {
+			return new JmxTestResult(StatusCode.FAILURE, "Unable to connect. Verify that the JMX Host and JMX Port are entered correctly.");
+		} catch (Exception e) {
+			return new JmxTestResult(StatusCode.FAILURE, e.getLocalizedMessage());
+		} finally {
+			if (jmxAccessor != null) {
+				jmxAccessor.shutdown();
+			}
+		}
 	}
 	
 	// This is how we would search for all object names that belong to com.jamfsoftware

@@ -18,11 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.jmxgraph.config.SingletonManager;
 import com.jmxgraph.domain.JmxAttribute;
 import com.jmxgraph.domain.JmxObjectName;
 import com.jmxgraph.mbean.JmxAccessor;
-import com.jmxgraph.repository.JmxAttributeRepository;
+import com.jmxgraph.repository.attribute.JdbcAttributeRepository;
+import com.jmxgraph.repository.attribute.JmxAttributeRepository;
 
 
 @WebServlet(name = "ObjectNameSelection", urlPatterns = { "/object-name-selection.html" })
@@ -35,24 +35,12 @@ public class ObjectNameSelectionServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/jsp/jmx-object-selection.jsp");
 		
-		JmxAttributeRepository repository = SingletonManager.getJmxAttributeRepository();
-		JmxAccessor jmxAccessor = SingletonManager.getJmxAccessor();
+		JmxAttributeRepository repository = JdbcAttributeRepository.getInstance();
+		JmxAccessor jmxAccessor = JmxAccessor.getInstance();
 		
-		String selectedObjectName = request.getParameter("objectName");
-		if (selectedObjectName != null) { // Service the AJAX call
-//			try {
-//				Set<JmxAttributePath> paths = jmxAccessor.getAttributePathsForObjectName(selectedObjectName);
-//			
-//				String jsonResponse = new Gson().toJson(paths);
-//				System.out.println(jsonResponse);
-//				
-//				response.setContentType("application/json");
-//				response.getWriter().write(jsonResponse);
-//			} catch (Exception e) {
-//				logger.error("", e);
-//			}	
-				
-		} else {
+		if (jmxAccessor.isInitialized()) {
+			request.setAttribute("jmxConfigured", true);
+			
 			Collection<JmxObjectName> jmxList = repository.getAllEnabledAttributePaths();
 			request.setAttribute("jmxList", jmxList);
 			
@@ -62,9 +50,9 @@ public class ObjectNameSelectionServlet extends HttpServlet {
 			} catch (Exception e) {
 				logger.error("", e);
 			}
-			
-			dispatcher.forward(request, response);
 		}
+		
+		dispatcher.forward(request, response);
 	}
 	
 	@Override
@@ -73,7 +61,7 @@ public class ObjectNameSelectionServlet extends HttpServlet {
 		String attributeName = request.getParameter("attributeName");
 		String attributeType = request.getParameter("attributeType");
 		
-		JmxAttributeRepository repository = SingletonManager.getJmxAttributeRepository();
+		JmxAttributeRepository repository = JdbcAttributeRepository.getInstance();
 		
 		JmxObjectName jmxObjectName = null;
 		JmxAttribute jmxAttribute = null;
