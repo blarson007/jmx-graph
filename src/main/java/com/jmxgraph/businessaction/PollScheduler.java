@@ -70,4 +70,8 @@ public class PollScheduler implements Initializable<Integer> {
 	public long getPollIntervalInSeconds() {
 		return pollIntervalInSeconds;
 	}
+	
+	public void stopJobExection() throws SchedulerException {
+		scheduler.shutdown(true);
+	}
 }

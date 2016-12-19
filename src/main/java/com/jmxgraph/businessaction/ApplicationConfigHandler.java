@@ -43,10 +43,10 @@ public class ApplicationConfigHandler implements Initializable<ApplicationConfig
 		repository.saveApplicationConfig(newConfig);
 		
 		if (jmxStarted) {
-			// TODO: Reload the application
-		} else {
-			startApplication(newConfig);
+			stopApplication();
 		}
+		
+		startApplication(newConfig);
 	}
 	
 	@Override
@@ -62,5 +62,12 @@ public class ApplicationConfigHandler implements Initializable<ApplicationConfig
 		PollScheduler.getInstance().initialize(config.getPollIntervalInSeconds());
 		
 		jmxStarted = true;
+	}
+	
+	private void stopApplication() throws Exception {
+		PollScheduler.getInstance().stopJobExection();
+		JmxAccessor.getInstance().shutdown();
+		
+		jmxStarted = false;
 	}
 }
