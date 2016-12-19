@@ -1,4 +1,4 @@
-package com.jmxgraph.repository;
+package com.jmxgraph.repository.attribute;
 
 import java.sql.Connection;
 import java.util.List;
@@ -21,22 +21,14 @@ import com.zaxxer.hikari.HikariDataSource;
 
 public enum JmxAttributeRepositoryType {
 	
-	/**CSV {
-		@Override
-		public JmxAttributeRepository createRepository() {
-			return new CsvAttributeRepository(new Date());
-		}
-	},*/
-	
 	IN_MEMORY_DB {
 		@Override
-		public JmxAttributeRepository createRepository() {
+		public void createRepository() {
 			logger.warn("Setting up in-memory datasource");
 			
 			EmbeddedDatabase embeddedDatabase = new EmbeddedDatabaseBuilder()
 					.setType(EmbeddedDatabaseType.HSQL)
-					.addScript("sql/create-db.sql")
-					.addScript("sql/insert-default-objects.sql").build();
+					.addScript("sql/create-db.sql").build();
 			
 			HikariDataSource hikariDataSource = new HikariDataSource();
 			hikariDataSource.setDataSource(embeddedDatabase);
@@ -49,13 +41,13 @@ public enum JmxAttributeRepositoryType {
 			
 			DatabaseManagerSwing.main(new String[] { "--url", "jdbc:hsqldb:mem:testdb", "--user", "sa", "--password", "" });
 			
-			return new JdbcAttributeRepository(hikariDataSource);
+			JdbcAttributeRepository.getInstance().initialize(hikariDataSource);
 		}
 	},
 	
 	EMBEDDED_DB {
 		@Override
-		public JmxAttributeRepository createRepository() {
+		public void createRepository() {
 			logger.warn("Setting up embedded datasource");
 			
 			boolean running = false;
@@ -78,18 +70,18 @@ public enum JmxAttributeRepositoryType {
 			hikariConfig.setMinimumIdle(5);
 			hikariConfig.setMaximumPoolSize(5);
 			
-			HikariDataSource dataSource = new HikariDataSource(hikariConfig);
-			buildTables(dataSource);
+			HikariDataSource hikariDataSource = new HikariDataSource(hikariConfig);
+			buildTables(hikariDataSource);
 			
 			DatabaseManagerSwing.main(new String[] { "--url", "jdbc:hsqldb:hsql://localhost:9001/jmx", "--user", "sa", "--password", "" });
 			
-			return new JdbcAttributeRepository(dataSource);
+			JdbcAttributeRepository.getInstance().initialize(hikariDataSource);
 		}
 	};
 	
 	private static final Logger logger = LoggerFactory.getLogger(JmxAttributeRepositoryType.class);
 	
-	public abstract JmxAttributeRepository createRepository();
+	public abstract void createRepository();
 	
 	private static void registerShutdownHook(final HikariDataSource hikariDataSource) {
 		Runtime.getRuntime().addShutdownHook(new Thread() {

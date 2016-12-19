@@ -18,7 +18,7 @@
 					<li>${page}</li>
 					<li class="${param.page eq 'Graphs' ? 'active' : ''}"><a href="/jmx-attribute-selection.html">Graphs</a></li>
 					<li class="${param.page eq 'MBeans' ? 'active' : ''}"><a href="/object-name-selection.html">MBeans</a></li>
-					<li><a href="#">Configuration</a></li>
+					<li class="${param.page eq 'Configuration' ? 'active' : ''}"><a href="/configuration.html">Configuration</a></li>
 				</ul>
 			</div>
 		</nav>
