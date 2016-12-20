@@ -1,17 +1,20 @@
 package com.jmxgraph.repository.attribute;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -77,7 +80,7 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 	public void insertJmxAttribute(final int objectNameId, final JmxAttribute jmxAttribute) {
 		jdbcTemplate.update("INSERT INTO jmx_attribute (object_name_id, attribute_name, attribute_type, path) VALUES (?, ?, ?, ?)",
 				new Object[] {
-						jmxAttribute.getObjectNameId(),
+						objectNameId,
 						jmxAttribute.getAttributeName(),
 						jmxAttribute.getAttributeType(),
 						jmxAttribute.getPath()
@@ -92,6 +95,27 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 						String.valueOf(jmxAttributeValue.getAttributeValue()),
 						jmxAttributeValue.getTimestamp()
 				});
+	}
+	
+	@Override
+	public void batchInsertAttributeValues(final List<JmxAttributeValue> jmxAttributeValues) {
+		String sql = "INSERT INTO jmx_attribute_value (attribute_id, attribute_value, poll_timestamp) VALUES (?, ?, ?)";
+		
+		jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				JmxAttributeValue jmxAttributeValue = jmxAttributeValues.get(i);
+				
+				ps.setInt(1, jmxAttributeValue.getAttributeId());
+				ps.setString(2, String.valueOf(jmxAttributeValue.getAttributeValue()));
+				ps.setDate(3, new Date(jmxAttributeValue.getTimestamp().getTime()));
+			}
+
+			@Override
+			public int getBatchSize() {
+				return jmxAttributeValues.size();
+			}
+		});
 	}
 
 //	@Override

@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.jmxgraph.ui.GraphObject;
 import com.jmxgraph.ui.GraphObject.Series;
 
@@ -18,11 +20,15 @@ public class JmxAttribute {
 	private Collection<JmxAttributeValue> attributeValues = new TreeSet<>();
 	
 	public JmxAttribute(int attributeId, int objectNameId, String attributeName, String attributeType, String path, boolean enabled) {
-		this(attributeName, attributeType);
+		this(attributeName, attributeType, path);
 		this.attributeId = attributeId;
 		this.objectNameId = objectNameId;
-		this.path = path;
 		this.enabled = enabled;
+	}
+	
+	public JmxAttribute(String attributeName, String attributeType, String path) {
+		this(attributeName, attributeType);
+		this.path = path;
 	}
 	
 	public JmxAttribute(String attributeName, String attributeType) {
@@ -56,6 +62,14 @@ public class JmxAttribute {
 
 	public Collection<JmxAttributeValue> getAttributeValues() {
 		return attributeValues;
+	}
+	
+	public String getAttributeDescription() {
+		if (StringUtils.isBlank(path)) {
+			return attributeName;
+		}
+		
+		return attributeName + " - " + path; 
 	}
 	
 	public boolean isNumericDataType() {

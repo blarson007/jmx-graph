@@ -18,6 +18,9 @@ public class ApplicationConfig {
 	private JmxAttributeRepositoryType repositoryType;
 	private Integer pollIntervalInSeconds = POLL_INTERVAL_DEFAULT;
 	private JmxConnectionConfig jmxConnectionConfig = new JmxConnectionConfig();
+	private boolean cpuPollingEnabled = true;
+	private boolean memoryPollingEnabled = true;
+	private boolean threadPollingEnabled = true;
 	
 	public JmxAttributeRepositoryType getRepositoryType() {
 		return repositoryType;
@@ -43,6 +46,30 @@ public class ApplicationConfig {
 		this.pollIntervalInSeconds = pollIntervalInSeconds;
 	}
 	
+	public boolean isCpuPollingEnabled() {
+		return cpuPollingEnabled;
+	}
+
+	public void setCpuPollingEnabled(boolean cpuPollingEnabled) {
+		this.cpuPollingEnabled = cpuPollingEnabled;
+	}
+
+	public boolean isMemoryPollingEnabled() {
+		return memoryPollingEnabled;
+	}
+
+	public void setMemoryPollingEnabled(boolean memoryPollingEnabled) {
+		this.memoryPollingEnabled = memoryPollingEnabled;
+	}
+
+	public boolean isThreadPollingEnabled() {
+		return threadPollingEnabled;
+	}
+
+	public void setThreadPollingEnabled(boolean threadPollingEnabled) {
+		this.threadPollingEnabled = threadPollingEnabled;
+	}
+
 	public boolean deviatesFromDefault() {
 		return 
 				repositoryType != JmxAttributeRepositoryType.EMBEDDED_DB ||
