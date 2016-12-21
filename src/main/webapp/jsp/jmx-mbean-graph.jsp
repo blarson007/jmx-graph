@@ -111,9 +111,9 @@
 		            <table class="table table-striped">
 		                <thead>
 		                    <tr>
-		                        <td>Object Name</td>
-		                        <td>Attribute</td>
-		                        <td>Filter</td>
+		                        <td style="font-weight: bold">Object Name</td>
+		                        <td style="font-weight: bold">Attribute</td>
+		                        <td></td>
 		                        <td></td>
 		                    </tr>
 		                </thead>
@@ -121,7 +121,7 @@
 		                	<c:forEach var="jmxAttribute" items="${jmxObjectName.attributes}">
 			                    <tr>
 			                        <td>${jmxObjectName.canonicalName}</td>
-			                        <td>${jmxAttribute.attributeName}</td>
+			                        <td>${jmxAttribute.attributeDescription}</td>
 			                        <td class="dropdown">
 			                        	<button id="attributeFilter${jmxAttribute.attributeId}" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" value="1">Filter&nbsp;<span class="caret"></span></button>
 									    <ul class="dropdown-menu">

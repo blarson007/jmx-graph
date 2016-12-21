@@ -46,6 +46,18 @@
                     <label for="pollIntervalInSeconds" class="control-label col-md-4 col-lg-8">Poll Interval (seconds):</label>
                     <input type="text" name="pollIntervalInSeconds" id="pollIntervalInSeconds" class="form-control" placeholder="Required" value="${config.pollIntervalInSeconds}" />
                     <c:if test="${jmxPollIntervalError != null}"><div class="error">${jmxPollIntervalError}</div></c:if>
+                    
+                    <div class="checkbox">
+                    	<label for="cpuPollingEnabled"><input type="checkbox" name="cpuPollingEnabled" id="cpuPollingEnabled" <c:if test="${config.cpuPollingEnabled}">checked</c:if>>Enable CPU Polling</label>
+                    </div>
+                    
+                    <div class="checkbox">
+                    	<label for="memoryPollingEnabled"><input type="checkbox" name="memoryPollingEnabled" id="memoryPollingEnabled" <c:if test="${config.memoryPollingEnabled}">checked</c:if>>Enable Memory Polling</label>
+                    </div>
+                    
+                    <div class="checkbox">
+                    	<label for="threadPollingEnabled"><input type="checkbox" name="threadPollingEnabled" id="threadPollingEnabled" <c:if test="${config.threadPollingEnabled}">checked</c:if>>Enable Thread Polling</label>
+                    </div>
 
                     <br><div id="messagePlaceholder"><span>&nbsp;</span></div><br>
                     <button type="submit" class="btn btn-primary btn-md">Accept</button>

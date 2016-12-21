@@ -16,6 +16,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
+import javax.management.openmbean.CompositeDataSupport;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
@@ -91,6 +92,31 @@ public class JmxAccessor implements Initializable<JmxConnectionConfig> {
 		}
 		
 		return objectNames;
+	}
+	
+	public JmxObjectName lookupAttribute(String objectName, String attribute, String... paths) throws MalformedObjectNameException, InstanceNotFoundException, 
+			IntrospectionException, ReflectionException, IOException, AttributeNotFoundException, MBeanException {
+		Set<JmxAttribute> attributes = new HashSet<>();
+		
+		ObjectName mbeanObjectName = new ObjectName(objectName);
+		MBeanInfo mBeanInfo = mBeanServerConnection.getMBeanInfo(mbeanObjectName);
+		
+		for (MBeanAttributeInfo attributeInfo : mBeanInfo.getAttributes()) {
+			if (attributeInfo.getName().equals(attribute)) {
+				if (paths != null && paths.length > 0 && attributeInfo.getType().equalsIgnoreCase("javax.management.openmbean.CompositeData")) {
+					CompositeDataSupport attributeValue = (CompositeDataSupport) getAttributeValue(objectName, attributeInfo.getName());
+					
+					for (String path : paths) {
+						attributes.add(new JmxAttribute(attributeInfo.getName(), attributeValue.getCompositeType().getType(path).getTypeName(), path));
+					}
+				} else {
+					attributes.add(new JmxAttribute(attributeInfo.getName(), attributeInfo.getType()));
+				}
+				break;
+			}
+		}
+		
+		return new JmxObjectName(mbeanObjectName.getCanonicalName(), mBeanInfo.getDescription(), attributes);
 	}
 	
 	public void shutdown() {
