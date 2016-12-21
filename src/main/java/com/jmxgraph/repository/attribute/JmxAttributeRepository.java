@@ -20,13 +20,15 @@ public interface JmxAttributeRepository extends Initializable<DataSource> {
 	
 	void insertJmxAttributeValue(JmxAttributeValue jmxAttributeValue) throws Exception;
 	
-	public void batchInsertAttributeValues(final List<JmxAttributeValue> jmxAttributeValues);
+	void batchInsertAttributeValues(final List<JmxAttributeValue> jmxAttributeValues);
 	
 	JmxAttribute getJmxAttributeValuesByAttributeId(final int attributeId, GraphFilter filter);
 	
 	Collection<JmxObjectName> getAllEnabledAttributePaths();
 	
-	JmxObjectName getJmxObjectName(String objectName);
+	JmxObjectName getJmxObjectName(final String objectName);
+	
+	JmxObjectName getJmxObjectNameWithAttributes(final String objectName);
 	
 	JmxAttribute getJmxAttribute(final int objectNameId, String attributeName);
 	

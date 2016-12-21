@@ -48,10 +48,10 @@ public class ApplicationConfigHandler implements Initializable<ApplicationConfig
 		if (jmxStarted) {
 			stopApplication();
 		}
+
+		populateDefaultObjects(newConfig);
 		
 		startApplication(newConfig);
-		
-		populateDefaultObjects(newConfig);
 	}
 	
 	@Override
@@ -77,10 +77,6 @@ public class ApplicationConfigHandler implements Initializable<ApplicationConfig
 	}
 	
 	private void populateDefaultObjects(ApplicationConfig config) throws Exception {
-		if (!jmxStarted) {
-			return;
-		}
-		
 		JmxAttributeRepository repository = JdbcAttributeRepository.getInstance();
 		JmxAccessor jmxAccessor = JmxAccessor.getInstance();
 		

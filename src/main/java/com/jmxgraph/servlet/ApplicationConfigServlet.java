@@ -47,6 +47,9 @@ public class ApplicationConfigServlet extends HttpServlet {
 		applicationConfig.setJmxConnectionConfig(jmxConnectionConfig);
 //		applicationConfig.setRepositoryType(JmxAttributeRepositoryType.valueOf(request.getParameter("repositoryType")));
 		applicationConfig.setPollIntervalInSeconds(Integer.parseInt(request.getParameter("pollIntervalInSeconds")));
+		applicationConfig.setCpuPollingEnabled(request.getParameter("cpuPollingEnabled") != null);
+		applicationConfig.setMemoryPollingEnabled(request.getParameter("memoryPollingEnabled") != null);
+		applicationConfig.setThreadPollingEnabled(request.getParameter("threadPollingEnabled") != null);
 		
 		try {
 			boolean errors = false;
@@ -66,8 +69,7 @@ public class ApplicationConfigServlet extends HttpServlet {
 			
 			logger.warn("Applying application config updates");
 			
-			ApplicationConfigHandler applicationConfigHandler = ApplicationConfigHandler.getInstance();
-			applicationConfigHandler.initialize(applicationConfig);
+			ApplicationConfigHandler.getInstance().initialize(applicationConfig);;
 		} catch (Exception e) {
 			logger.error("", e);
 			request.setAttribute("config", applicationConfig);

@@ -32,7 +32,7 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 	
 	private JdbcTemplate jdbcTemplate;
 	private JmxAttributeResultSetExtractor jmxAttributeResultSetExtractor;
-//	private JmxAttributePathRowMapper jmxAttributePathRowMapper;
+	private JmxObjectNameResultSetExtractor jmxObjectNameResultSetExtractor;
 	
 	private JdbcAttributeRepository() {  }
 	
@@ -48,7 +48,7 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 	public void initialize(DataSource dataSource) {
 		jdbcTemplate = new JdbcTemplate(dataSource);
 		jmxAttributeResultSetExtractor = new JmxAttributeResultSetExtractor();
-//		jmxAttributePathRowMapper = new JmxAttributePathRowMapper();
+		jmxObjectNameResultSetExtractor = new JmxObjectNameResultSetExtractor();
 	}
 	
 	@Override
@@ -117,17 +117,6 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 			}
 		});
 	}
-
-//	@Override
-//	public Collection<JmxObjectName> getAllJmxAttributeValues() {
-//		String sql =
-//				"SELECT jap.path_id, jap.object_name, jap.attribute, jap.attribute_type, jap.path, jap.enabled, jav.value_id, jav.attribute_value, jav.poll_timestamp " +
-//				"FROM jmx_attribute_path jap " +
-//				"JOIN jmx_attribute_value jav ON jap.path_id = jav.path_id " +
-//				"ORDER BY path_id ASC, poll_timestamp ASC";
-//		
-//		return jdbcTemplate.query(sql, jmxAttributeResultSetExtractor);
-//	}
 	
 	public class JmxAttributeResultSetExtractor implements ResultSetExtractor<Collection<JmxAttribute>> {
 		public Collection<JmxAttribute> extractData(ResultSet rs) throws SQLException, DataAccessException {
@@ -167,20 +156,14 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 		}
 	}
 	
-//	public class JmxAttributePathRowMapper implements RowMapper<JmxAttributePath> {
-//		public JmxAttributePath mapRow(ResultSet rs, int rowNum) throws SQLException {
-//			return new JmxAttributePath(rs.getInt("path_id"),  rs.getString("object_name"), rs.getString("attribute"), rs.getString("attribute_type"), rs.getString("path"), rs.getInt("enabled") == 1);
-//		}
-//	}
-	
 	public JmxAttribute getJmxAttributeValuesByAttributeId(final int attributeId, GraphFilter filter) {
-		String sql =
+		String selectQuery =
 				"SELECT ja.attribute_id, ja.object_name_id, ja.attribute_name, ja.attribute_type, ja.path, ja.enabled, jav.value_id, jav.attribute_value, jav.poll_timestamp " +
 				"FROM jmx_attribute ja LEFT JOIN jmx_attribute_value jav ON ja.attribute_id = jav.attribute_id " +
 				"WHERE attribute_id = ? " +
 				"ORDER BY poll_timestamp DESC LIMIT " + filter.getSqlLimit();
 		
-		return jdbcTemplate.query(sql, new Object[] { attributeId }, jmxAttributeResultSetExtractor).iterator().next();
+		return jdbcTemplate.query(selectQuery, new Object[] { attributeId }, jmxAttributeResultSetExtractor).iterator().next();
 	}
 	
 	@Override
@@ -190,11 +173,11 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 				"FROM jmx_object_name jon JOIN jmx_attribute ja ON jon.object_name_id = ja.object_name_id " +
 				"WHERE ja.enabled = 1";
 		
-		return jdbcTemplate.query(selectQuery, new JmxObjectNameResultSetExtractor());
+		return jdbcTemplate.query(selectQuery, jmxObjectNameResultSetExtractor);
 	}
 	
 	@Override
-	public JmxObjectName getJmxObjectName(String objectName) {
+	public JmxObjectName getJmxObjectName(final String objectName) {
 		String selectQuery = "SELECT object_name_id, canonical_object_name, description FROM jmx_object_name WHERE canonical_object_name = ?";
 		
 		return jdbcTemplate.queryForObject(selectQuery, new Object[] { objectName }, new RowMapper<JmxObjectName>() {
@@ -202,6 +185,17 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 				return new JmxObjectName(rs.getInt("object_name_id"), rs.getString("canonical_object_name"), rs.getString("description"));
 			}
 		});
+	}
+	
+	@Override
+	public JmxObjectName getJmxObjectNameWithAttributes(final String objectName) {
+		String selectQuery =
+				"SELECT jon.object_name_id, jon.canonical_object_name, jon.description, ja.attribute_id, ja.attribute_name, ja.attribute_type, ja.path, ja.enabled " +
+				"FROM jmx_object_name jon JOIN jmx_attribute ja ON jon.object_name_id = ja.object_name_id " +
+				"WHERE jon.canonical_object_name = ?";
+		
+		Collection<JmxObjectName> objectNameCollection = jdbcTemplate.query(selectQuery, new Object[] { objectName }, jmxObjectNameResultSetExtractor);
+		return objectNameCollection.isEmpty() ? null : objectNameCollection.iterator().next();
 	}
 	
 	@Override

@@ -25,12 +25,18 @@ public class Main {
 		CommandLineParser commandLineParser = new DefaultParser();
 		CommandLine commandLine = null;
 
+		ApplicationConfig config = null;
 		try {
 			commandLine = commandLineParser.parse(options, args);
-			ApplicationConfig config = parseCommandLineConfig(commandLine);
+			config = parseCommandLineConfig(commandLine);
 			
 			config.getRepositoryType().createRepository();
+		} catch (Exception e) {
+			logger.error("Fatal error while starting up the application.", e);
+			System.exit(1);
+		}	
 			
+		try {
 			ApplicationConfigHandler applicationConfigHandler = ApplicationConfigHandler.getInstance();
 			
 			if (config.deviatesFromDefault()) {
@@ -44,10 +50,15 @@ public class Main {
 					applicationConfigHandler.initialize(existingConfig);
 				}
 			}
+		} catch (Exception e) {
+			logger.warn("Error while initializing the application", e);
+		}	
 
+		try {
 			TomcatManager.startTomcat();
 		} catch (Exception e) {
-			logger.error("", e);
+			logger.error("Fatal error while starting up Tomcat", e);
+			System.exit(1);
 		}
 	}
 

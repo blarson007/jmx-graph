@@ -9,8 +9,6 @@ import javax.management.MBeanException;
 import javax.management.MalformedObjectNameException;
 import javax.management.ReflectionException;
 
-import org.springframework.dao.EmptyResultDataAccessException;
-
 import com.jmxgraph.mbean.JmxAccessor;
 import com.jmxgraph.repository.attribute.JmxAttributeRepository;
 
@@ -47,7 +45,7 @@ public enum DefaultObject {
 	public void handleObject(ApplicationConfig config, JmxAccessor jmxAccessor, JmxAttributeRepository repository) throws MalformedObjectNameException, 
 			InstanceNotFoundException, IntrospectionException, AttributeNotFoundException, ReflectionException, MBeanException, IOException {
 		
-		JmxObjectName jmxObjectName = getObjectFromRepository(objectName, repository);
+		JmxObjectName jmxObjectName = repository.getJmxObjectNameWithAttributes(objectName);
 		
 		if (isEnabled(config)) {
 			if (jmxObjectName == null) {
@@ -77,14 +75,6 @@ public enum DefaultObject {
 					}
 				}
 			}
-		}
-	}
-	
-	private JmxObjectName getObjectFromRepository(String objectName, JmxAttributeRepository repository) {
-		try {
-			return repository.getJmxObjectName(objectName);
-		} catch (EmptyResultDataAccessException e) {
-			return null;
 		}
 	}
 }
