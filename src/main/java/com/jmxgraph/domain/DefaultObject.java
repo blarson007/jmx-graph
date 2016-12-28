@@ -18,15 +18,40 @@ public enum DefaultObject {
 		public boolean isEnabled(ApplicationConfig config) {
 			return config.isCpuPollingEnabled();
 		}
+
+		public JmxAttributeProperties getDefaultProperties() {
+			JmxAttributeProperties attributeProperties = new JmxAttributeProperties();
+			
+			attributeProperties.put(JmxAttributeProperties.MULTIPLIER, "1000");
+			attributeProperties.put(JmxAttributeProperties.GRAPH_TYPE, JmxAttributeProperties.GRAPH_TYPE_PERCENTAGE);
+			
+			return attributeProperties;
+		}
 	}, 
 	MEMORY_POLLING("java.lang:type=Memory", "HeapMemoryUsage", new String[] { "committed", "used" }) {
 		public boolean isEnabled(ApplicationConfig config) {
 			return config.isMemoryPollingEnabled();
 		}
+
+		public JmxAttributeProperties getDefaultProperties() {
+			JmxAttributeProperties attributeProperties = new JmxAttributeProperties();
+			
+			attributeProperties.put(JmxAttributeProperties.GRAPH_TYPE, JmxAttributeProperties.GRAPH_TYPE_MEMORY);
+			
+			return attributeProperties;
+		}
 	}, 
 	THREAD_POLLING("java.lang:type=Threading", "ThreadCount", null) {
 		public boolean isEnabled(ApplicationConfig config) {
 			return config.isThreadPollingEnabled();
+		}
+
+		public JmxAttributeProperties getDefaultProperties() {
+			JmxAttributeProperties attributeProperties = new JmxAttributeProperties();
+			
+			attributeProperties.put(JmxAttributeProperties.INTEGER_VALUE, "true");
+			
+			return attributeProperties;
 		}
 	};
 	
@@ -41,6 +66,7 @@ public enum DefaultObject {
 	}
 	
 	public abstract boolean isEnabled(ApplicationConfig config);
+	public abstract JmxAttributeProperties getDefaultProperties();
 	
 	public void handleObject(ApplicationConfig config, JmxAccessor jmxAccessor, JmxAttributeRepository repository) throws MalformedObjectNameException, 
 			InstanceNotFoundException, IntrospectionException, AttributeNotFoundException, ReflectionException, MBeanException, IOException {
@@ -51,6 +77,7 @@ public enum DefaultObject {
 			if (jmxObjectName == null) {
 				// Option is enabled and object/attribute do not exist - add them
 				jmxObjectName = jmxAccessor.lookupAttribute(objectName, attribute, attributePaths);
+				jmxObjectName.applyAttributeProperties(getDefaultProperties());
 				repository.insertJmxObjectName(jmxObjectName);
 			} else {
 				for (JmxAttribute jmxAttribute : jmxObjectName.getAttributes()) {

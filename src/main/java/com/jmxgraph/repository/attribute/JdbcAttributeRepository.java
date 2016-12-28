@@ -23,6 +23,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import com.jmxgraph.domain.JmxAttribute;
+import com.jmxgraph.domain.JmxAttributeProperties;
 import com.jmxgraph.domain.JmxAttributeValue;
 import com.jmxgraph.domain.JmxObjectName;
 import com.jmxgraph.ui.GraphFilter;
@@ -72,29 +73,46 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 		}, holder);
 		
 		for (JmxAttribute jmxAttribute : jmxObjectName.getAttributes()) {
-			insertJmxAttribute(holder.getKey().intValue(), jmxAttribute);
+			int attributeId = insertJmxAttribute(holder.getKey().intValue(), jmxAttribute);
+			insertJmxAttributeProperties(attributeId, jmxAttribute.getAttributeProperties());
 		}
 	}
 	
 	@Override
-	public void insertJmxAttribute(final int objectNameId, final JmxAttribute jmxAttribute) {
-		jdbcTemplate.update("INSERT INTO jmx_attribute (object_name_id, attribute_name, attribute_type, path) VALUES (?, ?, ?, ?)",
-				new Object[] {
-						objectNameId,
-						jmxAttribute.getAttributeName(),
-						jmxAttribute.getAttributeType(),
-						jmxAttribute.getPath()
-				});
+	public int insertJmxAttribute(final int objectNameId, final JmxAttribute jmxAttribute) {
+		final String insertSql = "INSERT INTO jmx_attribute (object_name_id, attribute_name, attribute_type, path) VALUES (?, ?, ?, ?)";
+		KeyHolder holder = new GeneratedKeyHolder();
+		
+		jdbcTemplate.update(new PreparedStatementCreator() {
+			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+				PreparedStatement preparedStatement = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
+				preparedStatement.setInt(1, objectNameId);
+				preparedStatement.setString(2, jmxAttribute.getAttributeName());
+				preparedStatement.setString(3, jmxAttribute.getAttributeType());
+				preparedStatement.setString(4, jmxAttribute.getPath());
+				
+				return preparedStatement;
+			}
+		}, holder);
+		
+		return holder.getKey().intValue();
 	}
 
 	@Override
-	public void insertJmxAttributeValue(JmxAttributeValue jmxAttributeValue) {
+	public void insertJmxAttributeValue(final JmxAttributeValue jmxAttributeValue) {
 		jdbcTemplate.update("INSERT INTO jmx_attribute_value (attribute_id, attribute_value, poll_timestamp) VALUES (?, ?, ?)", 
 				new Object[] { 
 						jmxAttributeValue.getAttributeId(),
 						String.valueOf(jmxAttributeValue.getAttributeValue()),
 						jmxAttributeValue.getTimestamp()
 				});
+	}
+	
+	private void insertJmxAttributeProperties(final int attributeId, final JmxAttributeProperties jmxAttributeProperties) {
+		final String insertSql = "INSERT INTO jmx_attribute_property (attribute_id, property_name, property_value) VALUES (?, ?, ?)";
+		for (Map.Entry<String, String> entrySet : jmxAttributeProperties.entrySet()) {
+			jdbcTemplate.update(insertSql, new Object[] { attributeId, entrySet.getKey(), entrySet.getValue() });
+		}
 	}
 	
 	@Override
@@ -156,14 +174,30 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 		}
 	}
 	
+	public class JmxAttributePropertyResultSetExtractor implements ResultSetExtractor<JmxAttributeProperties> {
+		public JmxAttributeProperties extractData(ResultSet rs) throws SQLException, DataAccessException {
+			JmxAttributeProperties jmxAttributeProperties = new JmxAttributeProperties();
+			
+			while (rs.next()) {
+				jmxAttributeProperties.put(rs.getString("property_name"), rs.getString("property_value"));
+			}
+			
+			return jmxAttributeProperties;
+		}
+	}
+	
 	public JmxAttribute getJmxAttributeValuesByAttributeId(final int attributeId, GraphFilter filter) {
+		// TODO: Get attribute values and properties in a single query
 		String selectQuery =
 				"SELECT ja.attribute_id, ja.object_name_id, ja.attribute_name, ja.attribute_type, ja.path, ja.enabled, jav.value_id, jav.attribute_value, jav.poll_timestamp " +
 				"FROM jmx_attribute ja LEFT JOIN jmx_attribute_value jav ON ja.attribute_id = jav.attribute_id " +
 				"WHERE attribute_id = ? " +
 				"ORDER BY poll_timestamp DESC LIMIT " + filter.getSqlLimit();
 		
-		return jdbcTemplate.query(selectQuery, new Object[] { attributeId }, jmxAttributeResultSetExtractor).iterator().next();
+		JmxAttribute jmxAttribute = jdbcTemplate.query(selectQuery, new Object[] { attributeId }, jmxAttributeResultSetExtractor).iterator().next();
+		jmxAttribute.getAttributeProperties().putAll(jdbcTemplate.query("SELECT property_name, property_value FROM jmx_attribute_property WHERE attribute_id = ?", new Object[] { attributeId }, new JmxAttributePropertyResultSetExtractor()));
+		
+		return jmxAttribute;
 	}
 	
 	@Override

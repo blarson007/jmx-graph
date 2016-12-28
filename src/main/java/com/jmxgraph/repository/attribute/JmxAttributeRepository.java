@@ -16,7 +16,7 @@ public interface JmxAttributeRepository extends Initializable<DataSource> {
 
 	void insertJmxObjectName(JmxObjectName jmxObjectName);
 	
-	void insertJmxAttribute(final int objectNameId, final JmxAttribute jmxAttribute);
+	int insertJmxAttribute(final int objectNameId, final JmxAttribute jmxAttribute);
 	
 	void insertJmxAttributeValue(JmxAttributeValue jmxAttributeValue) throws Exception;
 	

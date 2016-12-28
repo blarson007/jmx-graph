@@ -16,7 +16,7 @@ import com.jmxgraph.repository.attribute.JdbcAttributeRepository;
 import com.jmxgraph.repository.attribute.JmxAttributeRepository;
 import com.jmxgraph.ui.GraphFilter;
 
-@WebServlet(name = "JmxAttributeGraphServlet", urlPatterns = { "/jmx-attribute-selection.html" })
+@WebServlet(name = "JmxAttributeGraphServlet", urlPatterns = { "/jmx-attribute-graph.html" })
 public class JmxAttributeGraphServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 2492396971460048886L;

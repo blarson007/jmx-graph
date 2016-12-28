@@ -1,1 +1,1 @@
-<jsp:forward page="/jmx-attribute-selection.html" /> 
+<jsp:forward page="/jmx-attribute-graph.html" /> 
