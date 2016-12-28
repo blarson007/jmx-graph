@@ -23,3 +23,11 @@ CREATE TABLE jmx_attribute_value (
 	poll_timestamp	TIMESTAMP,
 	FOREIGN KEY(attribute_id) REFERENCES jmx_attribute(attribute_id)
 );
+
+CREATE TABLE jmx_attribute_property (
+	property_id		IDENTITY,
+	attribute_id	INTEGER,
+	property_name	VARCHAR(100),
+	property_value	VARCHAR(255),
+	FOREIGN KEY(attribute_id) REFERENCES jmx_attribute(attribute_id)
+);

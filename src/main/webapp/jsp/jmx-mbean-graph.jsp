@@ -2,6 +2,7 @@
 <html>
     <head>
         <link rel="stylesheet" href="../bower_components/chartist/dist/chartist.min.css">  
+        <link rel="stylesheet" href="../css/graph-style.css">
     </head>
 
     <body>
@@ -67,6 +68,18 @@
 								labelInterpolationFnc: function(value) {
 									return moment(value).format(jsonResponse.dateFormat);
 								}
+							},
+							axisY: {
+								offset: 60,
+								onlyInteger: jsonResponse.onlyInteger,
+								labelInterpolationFnc: function(value) {
+									if (jsonResponse.graphType == 'memory') {
+										return formatBytes(value, 2);
+									} else if (jsonResponse.graphType == 'percentage') {
+										return value + "%";
+									}
+									return value;
+								}
 							}
 						});
 					}
@@ -86,6 +99,15 @@
     				executeGet(attributeId);
     			}
     		}
+    		
+    		function formatBytes(bytes,decimals) {
+				if(bytes == 0) return '0 Byte';
+				var k = 1000; // or 1024 for binary
+				var dm = decimals + 1 || 3;
+				var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+				var i = Math.floor(Math.log(bytes) / Math.log(k));
+				return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+   			}
     	</script>	
         <div class="container">
             <h2>Attributes</h2>

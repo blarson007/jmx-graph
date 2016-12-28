@@ -57,4 +57,10 @@ public class JmxObjectName {
 			return canonicalName.substring(0, 119) + "...";
 		}
 	}
+	
+	public void applyAttributeProperties(JmxAttributeProperties attributeProperties) {
+		for (JmxAttribute attribute : attributes) {
+			attribute.getAttributeProperties().putAll(attributeProperties);
+		}
+	}
 }
