@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jmxgraph.domain.JmxAttribute;
 import com.jmxgraph.repository.attribute.JdbcAttributeRepository;
 import com.jmxgraph.repository.attribute.JmxAttributeRepository;
@@ -19,7 +19,7 @@ public class JmxAttributeGraphAjaxServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 6731429154018155352L;
 	
-	private Gson gson = new Gson();
+	private ObjectMapper mapper = new ObjectMapper();
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -31,7 +31,7 @@ public class JmxAttributeGraphAjaxServlet extends HttpServlet {
 		
 		JmxAttribute attribute = repository.getJmxAttributeValuesByAttributeId(Integer.parseInt(attributeId), filter);
 
-		String jsonResponse = gson.toJson(attribute.getGraphObject());
+		String jsonResponse = mapper.writeValueAsString(attribute.getGraphObject(filter));
 		System.out.println(jsonResponse);
 		
 		response.setContentType("application/json");

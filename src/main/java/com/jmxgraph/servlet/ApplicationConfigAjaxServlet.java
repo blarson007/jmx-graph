@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jmxgraph.domain.JmxConnectionConfig;
 import com.jmxgraph.mbean.JmxAccessor;
 import com.jmxgraph.ui.JmxTestResult;
@@ -20,6 +20,8 @@ import com.jmxgraph.ui.JmxTestResult.StatusCode;
 public class ApplicationConfigAjaxServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1879629425881037160L;
+	
+	private ObjectMapper mapper = new ObjectMapper();
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -42,6 +44,6 @@ public class ApplicationConfigAjaxServlet extends HttpServlet {
 		}
 		
 		response.setContentType("application/json");
-		response.getWriter().write(new Gson().toJson(result));
+		response.getWriter().write(mapper.writeValueAsString(result));
 	}
 }
