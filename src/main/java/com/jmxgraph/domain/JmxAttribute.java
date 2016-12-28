@@ -1,13 +1,15 @@
 package com.jmxgraph.domain;
 
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.jmxgraph.ui.GraphFilter;
 import com.jmxgraph.ui.GraphObject;
+import com.jmxgraph.ui.GraphObject.DataPoint;
 import com.jmxgraph.ui.GraphObject.Series;
+import com.jmxgraph.ui.JsonGraph;
 
 public class JmxAttribute {
 
@@ -82,34 +84,29 @@ public class JmxAttribute {
 		return true;
 	}
 	
-	public GraphObject getGraphObject() {
+	public JsonGraph getGraphObject(GraphFilter filter) {
 		if (!isNumericDataType()) {
-			return new GraphObject("Cannot create a graph for a non-numeric data type");
+			return new JsonGraph("Cannot create a graph for a non-numeric data type");
 		}
 		
-		String[] labels = new String[attributeValues.size()];
-		Object[] data = new Object[attributeValues.size()];
-		
-		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
+		DataPoint[] dataPoints = new DataPoint[attributeValues.size()];
 		
 		int index = 0;
 		for (JmxAttributeValue value : attributeValues) {
-			labels[index] = sdf.format(value.getTimestamp());
 			// This is a hack to get non integer values to display
 			try {
-				data[index] = Integer.parseInt(String.valueOf(value.getAttributeValue()));
+				dataPoints[index] = new DataPoint(value.getTimestamp(), Integer.parseInt(String.valueOf(value.getAttributeValue())));
 			} catch (NumberFormatException e) {
 				try {
-					data[index] = Long.parseLong(String.valueOf(value.getAttributeValue()));
+					dataPoints[index] = new DataPoint(value.getTimestamp(), Long.parseLong(String.valueOf(value.getAttributeValue())));
 				} catch (NumberFormatException ne) {
-					data[index] = Double.parseDouble(String.valueOf(value.getAttributeValue()));
+					dataPoints[index] = new DataPoint(value.getTimestamp(), Double.parseDouble(String.valueOf(value.getAttributeValue())));
 				}
 			}
 			
 			index++;
 		}
 		
-		return new GraphObject(labels, new Series(data));
+		return new JsonGraph(new GraphObject(new Series(dataPoints)), filter.getLabelFormat());
 	}
-
 }

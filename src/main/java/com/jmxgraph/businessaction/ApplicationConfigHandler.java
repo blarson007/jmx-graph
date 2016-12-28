@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import com.jmxgraph.config.Initializable;
 import com.jmxgraph.domain.ApplicationConfig;
 import com.jmxgraph.domain.DefaultObject;
+import com.jmxgraph.domain.JmxConnectionConfig;
 import com.jmxgraph.mbean.JmxAccessor;
 import com.jmxgraph.repository.attribute.JdbcAttributeRepository;
 import com.jmxgraph.repository.attribute.JmxAttributeRepository;
@@ -49,9 +50,11 @@ public class ApplicationConfigHandler implements Initializable<ApplicationConfig
 			stopApplication();
 		}
 
+		startJmx(newConfig.getJmxConnectionConfig());
+		
 		populateDefaultObjects(newConfig);
 		
-		startApplication(newConfig);
+		startPoller(newConfig.getPollIntervalInSeconds());
 	}
 	
 	@Override
@@ -59,14 +62,16 @@ public class ApplicationConfigHandler implements Initializable<ApplicationConfig
 		return jmxStarted;
 	}
 	
-	private void startApplication(ApplicationConfig config) throws Exception {
+	private void startJmx(JmxConnectionConfig jmxConfig) throws Exception {
 		logger.warn("Attempting to connect to JMX.");
-		JmxAccessor.getInstance().initialize(config.getJmxConnectionConfig());
-		
-		logger.warn("Attempting to start JMX polling.");
-		PollScheduler.getInstance().initialize(config.getPollIntervalInSeconds());
+		JmxAccessor.getInstance().initialize(jmxConfig);
 		
 		jmxStarted = true;
+	}
+	
+	private void startPoller(Integer pollIntervalInSeconds) throws Exception {
+		logger.warn("Attempting to start JMX polling.");
+		PollScheduler.getInstance().initialize(pollIntervalInSeconds);
 	}
 	
 	private void stopApplication() throws Exception {

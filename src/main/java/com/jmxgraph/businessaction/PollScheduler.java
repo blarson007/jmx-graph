@@ -67,7 +67,7 @@ public class PollScheduler implements Initializable<Integer> {
 		scheduler.scheduleJob(jobDetail, trigger);
 	}
 	
-	public long getPollIntervalInSeconds() {
+	public int getPollIntervalInSeconds() {
 		return pollIntervalInSeconds;
 	}
 	

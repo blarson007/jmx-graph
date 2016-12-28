@@ -1,9 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
     <head>
-        <link rel="stylesheet" href="../css/bootstrap.min.css">
-        <script src="../js/jquery-3.1.1.min.js"></script>
-        <script src="../js/bootstrap.min.js"></script>     
         <link rel="stylesheet" href="../bower_components/chartist/dist/chartist.min.css">  
     </head>
 
@@ -12,23 +9,14 @@
     		<jsp:param value="Graphs" name="page" />
     	</jsp:include>
     	<script src="../bower_components/chartist/dist/chartist.min.js"></script>
+    	<script src="../js/moment.min.js"></script>
     	<script>
     		var currentAttributes = [];
-    		
-    		var options = {
-   				axisX: {
-   				    type: 'Chartist.FixedScaleAxis',
-   				    divisor: 5,
-   					labelInterpolationFnc: function(value) {
-   			      		return value;
-   			    	}
-   				}
-    		};
     		
     		$(document).ready(function() {
     			pollGraph();
     		});
-    	
+    		
     		function showHideGraph(attributeId) {
 				var buttonTxt = $('#showHide' + attributeId).text();
 				
@@ -71,7 +59,16 @@
 						$('#graph' + attributeId).html(jsonResponse.errorMessage);
 						removePath(attributeId);
 					} else {
-						new Chartist.Line('#graph' + attributeId, jsonResponse);
+						new Chartist.Line('#graph' + attributeId, jsonResponse.graphObject, {
+							showPoint: false,
+							axisX: {
+							    type: Chartist.FixedScaleAxis,
+								divisor: 10,
+								labelInterpolationFnc: function(value) {
+									return moment(value).format(jsonResponse.dateFormat);
+								}
+							}
+						});
 					}
 				});
     		}
@@ -123,12 +120,10 @@
 			                        <td>${jmxObjectName.canonicalName}</td>
 			                        <td>${jmxAttribute.attributeDescription}</td>
 			                        <td class="dropdown">
-			                        	<button id="attributeFilter${jmxAttribute.attributeId}" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" value="1">Filter&nbsp;<span class="caret"></span></button>
+			                        	<button id="attributeFilter${jmxAttribute.attributeId}" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" value="1">Filter</button>
 									    <ul class="dropdown-menu">
 									    	<c:forEach var="filter" items="${filters}">
-									    		<li role="presentation" class="${liClass}">
-									    			<a role="menuitem" href="#" onclick="setFilter('${jmxAttribute.attributeId}', '${filter.filterId}');">${filter.description}</a>
-									    		</li>
+									    		<li><a href="#" onclick="setFilter('${jmxAttribute.attributeId}', '${filter.filterId}');">${filter.description}</a></li>
 									    	</c:forEach>
 									    </ul>
 			                        </td>
@@ -137,7 +132,7 @@
 			                        </td>
 			                    </tr>
 			                    <tr>
-			                    	<td colspan="3" id="graph${jmxAttribute.attributeId}"></td>
+			                    	<td colspan="4" id="graph${jmxAttribute.attributeId}"></td>
 			                    </tr>
 		                    </c:forEach>
 		                </c:forEach>               
