@@ -1,20 +1,25 @@
 package com.jmxgraph.ui;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import com.jmxgraph.businessaction.PollScheduler;
 
 public enum GraphFilter {
 
-	NOW(1, 10, "Now", "hh:mm:ss") {
+	NOW(1, 10, "Now", "h:mm:ss") {
 		@Override
-		public int getSqlLimit() {
-			return 10;
+		public Date getSqlDateClause() {
+			Calendar now = Calendar.getInstance();
+			int numberOfSeconds = (10 * PollScheduler.getInstance().getPollIntervalInSeconds()) + 1;
+			now.add(Calendar.SECOND, -numberOfSeconds);
+			return now.getTime();
 		}
 	},
-	LAST_10_MINUTES(2, 600, "Last 10 Minutes", "hh:mm"),
-	LAST_HOUR(3, 3600, "Last Hour", "hh:mm"),
-	LAST_DAY(4, 86400, "Last Day", "hh:mm");
+	LAST_10_MINUTES(2, 600, "Last 10 Minutes", "h:mm"),
+	LAST_HOUR(3, 3600, "Last Hour", "h:mm"),
+	LAST_DAY(4, 86400, "Last Day", "h:mm a");
 	
 	private int filterId;
 	private int numberOfSeconds;
@@ -44,9 +49,10 @@ public enum GraphFilter {
 		return labelFormat.toPattern();
 	}
 	
-	public int getSqlLimit() {
-		int pollIntervalInSeconds = PollScheduler.getInstance().getPollIntervalInSeconds();
-		return numberOfSeconds / pollIntervalInSeconds;
+	public Date getSqlDateClause() {
+		Calendar now = Calendar.getInstance();
+		now.add(Calendar.SECOND, -numberOfSeconds);
+		return now.getTime();
 	}
 	
 	public static GraphFilter getFilterById(int filterId) {
