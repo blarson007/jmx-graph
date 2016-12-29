@@ -191,10 +191,9 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 		String selectQuery =
 				"SELECT ja.attribute_id, ja.object_name_id, ja.attribute_name, ja.attribute_type, ja.path, ja.enabled, jav.value_id, jav.attribute_value, jav.poll_timestamp " +
 				"FROM jmx_attribute ja LEFT JOIN jmx_attribute_value jav ON ja.attribute_id = jav.attribute_id " +
-				"WHERE attribute_id = ? " +
-				"ORDER BY poll_timestamp DESC LIMIT " + filter.getSqlLimit();
+				"WHERE attribute_id = ? AND poll_timestamp > ?";
 		
-		JmxAttribute jmxAttribute = jdbcTemplate.query(selectQuery, new Object[] { attributeId }, jmxAttributeResultSetExtractor).iterator().next();
+		JmxAttribute jmxAttribute = jdbcTemplate.query(selectQuery, new Object[] { attributeId, filter.getSqlDateClause() }, jmxAttributeResultSetExtractor).iterator().next();
 		jmxAttribute.getAttributeProperties().putAll(jdbcTemplate.query("SELECT property_name, property_value FROM jmx_attribute_property WHERE attribute_id = ?", new Object[] { attributeId }, new JmxAttributePropertyResultSetExtractor()));
 		
 		return jmxAttribute;
