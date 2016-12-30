@@ -1,4 +1,4 @@
-package com.jmxgraph.domain;
+package com.jmxgraph.domain.defaults;
 
 import java.io.IOException;
 
@@ -9,12 +9,16 @@ import javax.management.MBeanException;
 import javax.management.MalformedObjectNameException;
 import javax.management.ReflectionException;
 
+import com.jmxgraph.domain.JmxAttributeProperties;
+import com.jmxgraph.domain.appconfig.ApplicationConfig;
+import com.jmxgraph.domain.jmx.JmxAttribute;
+import com.jmxgraph.domain.jmx.JmxObjectName;
 import com.jmxgraph.mbean.JmxAccessor;
-import com.jmxgraph.repository.attribute.JmxAttributeRepository;
+import com.jmxgraph.repository.jmx.JmxAttributeRepository;
 
 public enum DefaultObject {
 
-	CPU_POLLING("java.lang:type=OperatingSystem", "ProcessCpuLoad", null) {
+	PROCESS_CPU_LOAD("java.lang:type=OperatingSystem", "ProcessCpuLoad", null) {
 		public boolean isEnabled(ApplicationConfig config) {
 			return config.isCpuPollingEnabled();
 		}
@@ -27,8 +31,13 @@ public enum DefaultObject {
 			
 			return attributeProperties;
 		}
-	}, 
-	MEMORY_POLLING("java.lang:type=Memory", "HeapMemoryUsage", new String[] { "committed", "used" }) {
+	},
+	SYSTEM_CPU_LOAD("java.lang:type=OperatingSystem", "SystemCpuLoad", null) {
+		public boolean isEnabled(ApplicationConfig config) {
+			return config.isCpuPollingEnabled();
+		}
+	},
+	HEAP_MEMORY_USAGE("java.lang:type=Memory", "HeapMemoryUsage", new String[] { "committed", "used" }) {
 		public boolean isEnabled(ApplicationConfig config) {
 			return config.isMemoryPollingEnabled();
 		}
@@ -41,7 +50,7 @@ public enum DefaultObject {
 			return attributeProperties;
 		}
 	}, 
-	THREAD_POLLING("java.lang:type=Threading", "ThreadCount", null) {
+	THREAD_COUNT("java.lang:type=Threading", "ThreadCount", null) {
 		public boolean isEnabled(ApplicationConfig config) {
 			return config.isThreadPollingEnabled();
 		}
@@ -66,7 +75,7 @@ public enum DefaultObject {
 	}
 	
 	public abstract boolean isEnabled(ApplicationConfig config);
-	public abstract JmxAttributeProperties getDefaultProperties();
+//	public abstract JmxAttributeProperties getDefaultProperties();
 	
 	public void handleObject(ApplicationConfig config, JmxAccessor jmxAccessor, JmxAttributeRepository repository) throws MalformedObjectNameException, 
 			InstanceNotFoundException, IntrospectionException, AttributeNotFoundException, ReflectionException, MBeanException, IOException {
@@ -77,7 +86,7 @@ public enum DefaultObject {
 			if (jmxObjectName == null) {
 				// Option is enabled and object/attribute do not exist - add them
 				jmxObjectName = jmxAccessor.lookupAttribute(objectName, attribute, attributePaths);
-				jmxObjectName.applyAttributeProperties(getDefaultProperties());
+//				jmxObjectName.applyAttributeProperties(getDefaultProperties());
 				repository.insertJmxObjectName(jmxObjectName);
 			} else {
 				for (JmxAttribute jmxAttribute : jmxObjectName.getAttributes()) {

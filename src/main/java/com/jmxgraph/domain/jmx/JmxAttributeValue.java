@@ -1,4 +1,4 @@
-package com.jmxgraph.domain;
+package com.jmxgraph.domain.jmx;
 
 import java.util.Date;
 

@@ -1,4 +1,4 @@
-package com.jmxgraph.repository.attribute;
+package com.jmxgraph.repository.jmx;
 
 import java.util.Collection;
 import java.util.List;
@@ -6,17 +6,17 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import com.jmxgraph.config.Initializable;
-import com.jmxgraph.domain.JmxAttribute;
-import com.jmxgraph.domain.JmxAttributeValue;
-import com.jmxgraph.domain.JmxObjectName;
+import com.jmxgraph.domain.jmx.JmxAttribute;
+import com.jmxgraph.domain.jmx.JmxAttributeValue;
+import com.jmxgraph.domain.jmx.JmxObjectName;
 import com.jmxgraph.ui.GraphFilter;
 
 
 public interface JmxAttributeRepository extends Initializable<DataSource> {
 
-	void insertJmxObjectName(JmxObjectName jmxObjectName);
+	JmxObjectName insertJmxObjectName(JmxObjectName jmxObjectName);
 	
-	int insertJmxAttribute(final int objectNameId, final JmxAttribute jmxAttribute);
+	JmxAttribute insertJmxAttribute(final int objectNameId, final JmxAttribute jmxAttribute);
 	
 	void insertJmxAttributeValue(JmxAttributeValue jmxAttributeValue) throws Exception;
 	

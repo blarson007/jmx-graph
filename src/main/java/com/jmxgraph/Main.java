@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import com.jmxgraph.businessaction.ApplicationConfigHandler;
 import com.jmxgraph.businessaction.TomcatManager;
-import com.jmxgraph.domain.ApplicationConfig;
-import com.jmxgraph.domain.JmxConnectionConfig;
-import com.jmxgraph.repository.attribute.JmxAttributeRepositoryType;
+import com.jmxgraph.domain.appconfig.ApplicationConfig;
+import com.jmxgraph.domain.appconfig.JmxConnectionConfig;
+import com.jmxgraph.repository.jmx.JmxAttributeRepositoryType;
 
 
 public class Main {

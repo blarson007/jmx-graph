@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jmxgraph.domain.JmxAttribute;
-import com.jmxgraph.repository.attribute.JdbcAttributeRepository;
-import com.jmxgraph.repository.attribute.JmxAttributeRepository;
+import com.jmxgraph.domain.jmx.JmxAttribute;
+import com.jmxgraph.repository.jmx.JdbcAttributeRepository;
+import com.jmxgraph.repository.jmx.JmxAttributeRepository;
 import com.jmxgraph.ui.GraphFilter;
 
 @WebServlet(name = "JmxAttributeGraphAjaxServlet", urlPatterns = { "/jmx-attribute-graph-ajax.html" })

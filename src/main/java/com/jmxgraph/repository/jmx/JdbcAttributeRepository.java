@@ -1,4 +1,4 @@
-package com.jmxgraph.repository.attribute;
+package com.jmxgraph.repository.jmx;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -22,10 +22,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import com.jmxgraph.domain.JmxAttribute;
 import com.jmxgraph.domain.JmxAttributeProperties;
-import com.jmxgraph.domain.JmxAttributeValue;
-import com.jmxgraph.domain.JmxObjectName;
+import com.jmxgraph.domain.jmx.JmxAttribute;
+import com.jmxgraph.domain.jmx.JmxAttributeValue;
+import com.jmxgraph.domain.jmx.JmxObjectName;
 import com.jmxgraph.ui.GraphFilter;
 
 
@@ -58,7 +58,7 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 	}
 	
 	@Override
-	public void insertJmxObjectName(final JmxObjectName jmxObjectName) {
+	public JmxObjectName insertJmxObjectName(final JmxObjectName jmxObjectName) {
 		final String insertSql = "INSERT INTO jmx_object_name (canonical_object_name, description) VALUES (?, ?)";
 		KeyHolder holder = new GeneratedKeyHolder();
 		
@@ -73,13 +73,15 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 		}, holder);
 		
 		for (JmxAttribute jmxAttribute : jmxObjectName.getAttributes()) {
-			int attributeId = insertJmxAttribute(holder.getKey().intValue(), jmxAttribute);
-			insertJmxAttributeProperties(attributeId, jmxAttribute.getAttributeProperties());
+			JmxAttribute attribute = insertJmxAttribute(holder.getKey().intValue(), jmxAttribute);
+			insertJmxAttributeProperties(attribute.getAttributeId(), jmxAttribute.getAttributeProperties());
 		}
+		
+		return new JmxObjectName(holder.getKey().intValue(), jmxObjectName.getCanonicalName(), jmxObjectName.getDescription());
 	}
 	
 	@Override
-	public int insertJmxAttribute(final int objectNameId, final JmxAttribute jmxAttribute) {
+	public JmxAttribute insertJmxAttribute(final int objectNameId, final JmxAttribute jmxAttribute) {
 		final String insertSql = "INSERT INTO jmx_attribute (object_name_id, attribute_name, attribute_type, path) VALUES (?, ?, ?, ?)";
 		KeyHolder holder = new GeneratedKeyHolder();
 		
@@ -95,7 +97,7 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 			}
 		}, holder);
 		
-		return holder.getKey().intValue();
+		return new JmxAttribute(holder.getKey().intValue(), objectNameId, jmxAttribute.getAttributeName(), jmxAttribute.getAttributeType(), jmxAttribute.getPath(), jmxAttribute.isEnabled());
 	}
 
 	@Override

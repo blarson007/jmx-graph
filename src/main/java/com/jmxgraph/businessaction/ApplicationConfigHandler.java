@@ -5,14 +5,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jmxgraph.config.Initializable;
-import com.jmxgraph.domain.ApplicationConfig;
-import com.jmxgraph.domain.DefaultObject;
-import com.jmxgraph.domain.JmxConnectionConfig;
+import com.jmxgraph.domain.appconfig.ApplicationConfig;
+import com.jmxgraph.domain.appconfig.JmxConnectionConfig;
+import com.jmxgraph.domain.defaults.DefaultObject;
 import com.jmxgraph.mbean.JmxAccessor;
-import com.jmxgraph.repository.attribute.JdbcAttributeRepository;
-import com.jmxgraph.repository.attribute.JmxAttributeRepository;
-import com.jmxgraph.repository.config.ApplicationConfigRepository;
-import com.jmxgraph.repository.config.XmlApplicationConfigRepository;
+import com.jmxgraph.repository.appconfig.ApplicationConfigRepository;
+import com.jmxgraph.repository.appconfig.XmlApplicationConfigRepository;
+import com.jmxgraph.repository.jmx.JdbcAttributeRepository;
+import com.jmxgraph.repository.jmx.JmxAttributeRepository;
 
 public class ApplicationConfigHandler implements Initializable<ApplicationConfig> {
 	

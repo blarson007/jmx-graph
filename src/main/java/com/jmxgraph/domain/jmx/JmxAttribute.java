@@ -1,10 +1,11 @@
-package com.jmxgraph.domain;
+package com.jmxgraph.domain.jmx;
 
 import java.util.Collection;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.jmxgraph.domain.JmxAttributeProperties;
 import com.jmxgraph.ui.GraphFilter;
 import com.jmxgraph.ui.GraphObject;
 import com.jmxgraph.ui.GraphObject.DataPoint;

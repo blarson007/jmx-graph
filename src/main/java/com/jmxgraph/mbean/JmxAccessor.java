@@ -26,9 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jmxgraph.config.Initializable;
-import com.jmxgraph.domain.JmxAttribute;
-import com.jmxgraph.domain.JmxConnectionConfig;
-import com.jmxgraph.domain.JmxObjectName;
+import com.jmxgraph.domain.appconfig.JmxConnectionConfig;
+import com.jmxgraph.domain.jmx.JmxAttribute;
+import com.jmxgraph.domain.jmx.JmxObjectName;
 import com.jmxgraph.ui.JmxTestResult;
 import com.jmxgraph.ui.JmxTestResult.StatusCode;
 

@@ -1,10 +1,10 @@
-package com.jmxgraph.domain;
+package com.jmxgraph.domain.appconfig;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.jmxgraph.repository.attribute.JmxAttributeRepositoryType;
+import com.jmxgraph.repository.jmx.JmxAttributeRepositoryType;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)

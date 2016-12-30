@@ -1,4 +1,4 @@
-package com.jmxgraph.repository.attribute;
+package com.jmxgraph.repository.jmx;
 
 import java.sql.Connection;
 import java.util.List;

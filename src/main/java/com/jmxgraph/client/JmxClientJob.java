@@ -21,12 +21,12 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jmxgraph.domain.JmxAttribute;
-import com.jmxgraph.domain.JmxAttributeValue;
-import com.jmxgraph.domain.JmxObjectName;
+import com.jmxgraph.domain.jmx.JmxAttribute;
+import com.jmxgraph.domain.jmx.JmxAttributeValue;
+import com.jmxgraph.domain.jmx.JmxObjectName;
 import com.jmxgraph.mbean.JmxAccessor;
-import com.jmxgraph.repository.attribute.JdbcAttributeRepository;
-import com.jmxgraph.repository.attribute.JmxAttributeRepository;
+import com.jmxgraph.repository.jmx.JdbcAttributeRepository;
+import com.jmxgraph.repository.jmx.JmxAttributeRepository;
 
 
 public class JmxClientJob implements Job {

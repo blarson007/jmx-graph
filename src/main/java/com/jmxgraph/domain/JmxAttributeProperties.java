@@ -2,6 +2,7 @@ package com.jmxgraph.domain;
 
 import java.util.HashMap;
 
+@Deprecated // Replaced with JmxGraph
 public class JmxAttributeProperties extends HashMap<String, String> {
 
 	private static final long serialVersionUID = 8888126991636529071L;

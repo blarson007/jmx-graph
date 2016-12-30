@@ -18,11 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.jmxgraph.domain.JmxAttribute;
-import com.jmxgraph.domain.JmxObjectName;
+import com.jmxgraph.domain.jmx.JmxAttribute;
+import com.jmxgraph.domain.jmx.JmxObjectName;
 import com.jmxgraph.mbean.JmxAccessor;
-import com.jmxgraph.repository.attribute.JdbcAttributeRepository;
-import com.jmxgraph.repository.attribute.JmxAttributeRepository;
+import com.jmxgraph.repository.jmx.JdbcAttributeRepository;
+import com.jmxgraph.repository.jmx.JmxAttributeRepository;
 
 
 @WebServlet(name = "ObjectNameSelection", urlPatterns = { "/object-name-selection.html" })

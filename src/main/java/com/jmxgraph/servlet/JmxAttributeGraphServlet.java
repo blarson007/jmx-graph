@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.jmxgraph.businessaction.PollScheduler;
-import com.jmxgraph.domain.JmxObjectName;
-import com.jmxgraph.repository.attribute.JdbcAttributeRepository;
-import com.jmxgraph.repository.attribute.JmxAttributeRepository;
+import com.jmxgraph.domain.jmx.JmxObjectName;
+import com.jmxgraph.repository.jmx.JdbcAttributeRepository;
+import com.jmxgraph.repository.jmx.JmxAttributeRepository;
 import com.jmxgraph.ui.GraphFilter;
 
 @WebServlet(name = "JmxAttributeGraphServlet", urlPatterns = { "/jmx-attribute-graph.html" })

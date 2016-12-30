@@ -1,7 +1,9 @@
-package com.jmxgraph.domain;
+package com.jmxgraph.domain.jmx;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import com.jmxgraph.domain.JmxAttributeProperties;
 
 public class JmxObjectName {
 
@@ -31,10 +33,6 @@ public class JmxObjectName {
 
 	public String getDescription() {
 		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	public Set<JmxAttribute> getAttributes() {
