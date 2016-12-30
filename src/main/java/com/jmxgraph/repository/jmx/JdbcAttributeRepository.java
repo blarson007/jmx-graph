@@ -25,6 +25,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import com.jmxgraph.domain.JmxAttributeProperties;
 import com.jmxgraph.domain.jmx.JmxAttribute;
 import com.jmxgraph.domain.jmx.JmxAttributeValue;
+import com.jmxgraph.domain.jmx.JmxGraph;
 import com.jmxgraph.domain.jmx.JmxObjectName;
 import com.jmxgraph.ui.GraphFilter;
 
@@ -253,4 +254,37 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 	public void disableJmxAttributePath(final int attributeId) {
 		jdbcTemplate.update("UPDATE jmx_attribute SET enabled = 0 WHERE attribute_id = ?", new Object[] { attributeId });
 	}
+
+	@Override
+	public JmxGraph getJmxGraph(final String graphName) {
+		String selectQuery =
+				"SELECT jg.graph_id, jg.graph_name, jg.graph_type, jg.multiplier, jg.integer_value, ja.attribute_id, ja.attribute_name, ja.attribute_type, ja.path, ja.enabled " +
+				"FROM jmx_graph jg " +
+						"JOIN jmx_graph_attribute jga ON jg.graph_id = jga.graph_id " +
+						"JOIN jmx_attribute ja ON jga.attribute_id = ja.attribute_id " +
+				"WHERE jg.graph_name = ?";
+		return jdbcTemplate.query(selectQuery, new Object[] { graphName }, new JmxGraphResultSetExtractor());
+	}
+	
+	public class JmxGraphResultSetExtractor implements ResultSetExtractor<JmxGraph> {
+		public JmxGraph extractData(ResultSet rs) throws SQLException, DataAccessException {
+			JmxGraph jmxGraph = null;
+			
+			while (rs.next()) {
+				if (jmxGraph == null) {
+					jmxGraph = new JmxGraph(rs.getInt("graph_id"), rs.getString("graph_type"), rs.getInt("multiplier"), rs.getInt("integer_value") == 1);
+				}
+				jmxGraph.addAttribute(new JmxAttribute(rs.getInt("attribute_id"), rs.getInt("object_name_id"), rs.getString("attribute_name"), rs.getString("attribute_type"), rs.getString("path"), rs.getInt("enabled") == 1));
+			}
+			
+			return jmxGraph;
+		}
+	}
+
+	@Override
+	public JmxGraph insertJmxGraph(JmxGraph jmxGraph) {
+		
+		return null;
+	}
+	
 }

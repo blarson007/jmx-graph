@@ -77,7 +77,7 @@ public enum DefaultObject {
 	public abstract boolean isEnabled(ApplicationConfig config);
 //	public abstract JmxAttributeProperties getDefaultProperties();
 	
-	public void handleObject(ApplicationConfig config, JmxAccessor jmxAccessor, JmxAttributeRepository repository) throws MalformedObjectNameException, 
+	public JmxObjectName handleObject(ApplicationConfig config, JmxAccessor jmxAccessor, JmxAttributeRepository repository) throws MalformedObjectNameException, 
 			InstanceNotFoundException, IntrospectionException, AttributeNotFoundException, ReflectionException, MBeanException, IOException {
 		
 		JmxObjectName jmxObjectName = repository.getJmxObjectNameWithAttributes(objectName);
@@ -87,7 +87,7 @@ public enum DefaultObject {
 				// Option is enabled and object/attribute do not exist - add them
 				jmxObjectName = jmxAccessor.lookupAttribute(objectName, attribute, attributePaths);
 //				jmxObjectName.applyAttributeProperties(getDefaultProperties());
-				repository.insertJmxObjectName(jmxObjectName);
+				jmxObjectName = repository.insertJmxObjectName(jmxObjectName); // Reassigning so that we have all the primary keys
 			} else {
 				for (JmxAttribute jmxAttribute : jmxObjectName.getAttributes()) {
 					if (!jmxAttribute.isEnabled()) {
@@ -112,5 +112,6 @@ public enum DefaultObject {
 				}
 			}
 		}
+		return jmxObjectName;
 	}
 }

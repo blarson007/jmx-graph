@@ -34,9 +34,11 @@ CREATE TABLE jmx_attribute_property (
 
 CREATE TABLE jmx_graph (
 	graph_id		IDENTITY,
+	graph_name		VARCHAR(100),
 	graph_type		VARCHAR(20),
 	multiplier		INTEGER DEFAULT 1,
-	integer_value	INTEGER DEFAULT 0
+	integer_value	INTEGER DEFAULT 0,
+	UNIQUE(graph_name)
 );
 
 CREATE TABLE jmx_graph_attribute (

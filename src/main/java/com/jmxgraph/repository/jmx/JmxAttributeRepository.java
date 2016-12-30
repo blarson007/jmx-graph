@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import com.jmxgraph.config.Initializable;
 import com.jmxgraph.domain.jmx.JmxAttribute;
 import com.jmxgraph.domain.jmx.JmxAttributeValue;
+import com.jmxgraph.domain.jmx.JmxGraph;
 import com.jmxgraph.domain.jmx.JmxObjectName;
 import com.jmxgraph.ui.GraphFilter;
 
@@ -35,4 +36,8 @@ public interface JmxAttributeRepository extends Initializable<DataSource> {
 	void enableJmxAttributePath(int pathId);
 	
 	void disableJmxAttributePath(int pathId);
+	
+	JmxGraph getJmxGraph(final String graphName);
+	
+	JmxGraph insertJmxGraph(JmxGraph jmxGraph);
 }
