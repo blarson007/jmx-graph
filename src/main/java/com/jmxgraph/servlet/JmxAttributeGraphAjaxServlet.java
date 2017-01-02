@@ -15,6 +15,7 @@ import com.jmxgraph.repository.jmx.JmxAttributeRepository;
 import com.jmxgraph.ui.GraphFilter;
 
 @WebServlet(name = "JmxAttributeGraphAjaxServlet", urlPatterns = { "/jmx-attribute-graph-ajax.html" })
+@Deprecated // Use JmxGraphAjaxServlet
 public class JmxAttributeGraphAjaxServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 6731429154018155352L;

@@ -9,7 +9,6 @@ import javax.management.MBeanException;
 import javax.management.MalformedObjectNameException;
 import javax.management.ReflectionException;
 
-import com.jmxgraph.domain.JmxAttributeProperties;
 import com.jmxgraph.domain.appconfig.ApplicationConfig;
 import com.jmxgraph.domain.jmx.JmxAttribute;
 import com.jmxgraph.domain.jmx.JmxObjectName;
@@ -22,15 +21,6 @@ public enum DefaultObject {
 		public boolean isEnabled(ApplicationConfig config) {
 			return config.isCpuPollingEnabled();
 		}
-
-		public JmxAttributeProperties getDefaultProperties() {
-			JmxAttributeProperties attributeProperties = new JmxAttributeProperties();
-			
-			attributeProperties.put(JmxAttributeProperties.MULTIPLIER, "1000");
-			attributeProperties.put(JmxAttributeProperties.GRAPH_TYPE, JmxAttributeProperties.GRAPH_TYPE_PERCENTAGE);
-			
-			return attributeProperties;
-		}
 	},
 	SYSTEM_CPU_LOAD("java.lang:type=OperatingSystem", "SystemCpuLoad", null) {
 		public boolean isEnabled(ApplicationConfig config) {
@@ -41,26 +31,10 @@ public enum DefaultObject {
 		public boolean isEnabled(ApplicationConfig config) {
 			return config.isMemoryPollingEnabled();
 		}
-
-		public JmxAttributeProperties getDefaultProperties() {
-			JmxAttributeProperties attributeProperties = new JmxAttributeProperties();
-			
-			attributeProperties.put(JmxAttributeProperties.GRAPH_TYPE, JmxAttributeProperties.GRAPH_TYPE_MEMORY);
-			
-			return attributeProperties;
-		}
 	}, 
 	THREAD_COUNT("java.lang:type=Threading", "ThreadCount", null) {
 		public boolean isEnabled(ApplicationConfig config) {
 			return config.isThreadPollingEnabled();
-		}
-
-		public JmxAttributeProperties getDefaultProperties() {
-			JmxAttributeProperties attributeProperties = new JmxAttributeProperties();
-			
-			attributeProperties.put(JmxAttributeProperties.INTEGER_VALUE, "true");
-			
-			return attributeProperties;
 		}
 	};
 	
@@ -75,7 +49,6 @@ public enum DefaultObject {
 	}
 	
 	public abstract boolean isEnabled(ApplicationConfig config);
-//	public abstract JmxAttributeProperties getDefaultProperties();
 	
 	public JmxObjectName handleObject(ApplicationConfig config, JmxAccessor jmxAccessor, JmxAttributeRepository repository) throws MalformedObjectNameException, 
 			InstanceNotFoundException, IntrospectionException, AttributeNotFoundException, ReflectionException, MBeanException, IOException {
@@ -85,9 +58,7 @@ public enum DefaultObject {
 		if (isEnabled(config)) {
 			if (jmxObjectName == null) {
 				// Option is enabled and object/attribute do not exist - add them
-				jmxObjectName = jmxAccessor.lookupAttribute(objectName, attribute, attributePaths);
-//				jmxObjectName.applyAttributeProperties(getDefaultProperties());
-				jmxObjectName = repository.insertJmxObjectName(jmxObjectName); // Reassigning so that we have all the primary keys
+				jmxObjectName = repository.insertJmxObjectName(jmxAccessor.lookupAttribute(objectName, attribute, attributePaths)); // Reassigning so that we have all the primary keys
 			} else {
 				for (JmxAttribute jmxAttribute : jmxObjectName.getAttributes()) {
 					if (!jmxAttribute.isEnabled()) {

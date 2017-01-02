@@ -10,17 +10,18 @@ public class JmxGraph {
 	public static final String GRAPH_TYPE_PERCENTAGE = "percentage";
 
 	private int graphId;
+	private String graphName;
 	private String graphType;
 	private int multiplier;
 	private boolean integerValue;
 	private Collection<JmxAttribute> attributes;
 	
-	public JmxGraph(int graphId, String graphType, int multiplier, boolean integerValue) {
-		this(graphType, multiplier, integerValue);
+	public JmxGraph(int graphId, String graphName, String graphType, int multiplier, boolean integerValue) {
+		this(graphName, graphType, multiplier, integerValue);
 		this.graphId = graphId;
 	}
 	
-	public JmxGraph(String graphType, int multiplier, boolean integerValue) {
+	public JmxGraph(String graphName, String graphType, int multiplier, boolean integerValue) {
 		this.graphType = graphType;
 		this.multiplier = multiplier;
 		this.integerValue = integerValue;
@@ -29,6 +30,10 @@ public class JmxGraph {
 	
 	public int getGraphId() {
 		return graphId;
+	}
+	
+	public String getGraphName() {
+		return graphName;
 	}
 	
 	public String getGraphType() {

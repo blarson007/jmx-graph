@@ -10,6 +10,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ReflectionException;
 
 import com.jmxgraph.domain.appconfig.ApplicationConfig;
+import com.jmxgraph.domain.jmx.JmxAttribute;
 import com.jmxgraph.domain.jmx.JmxGraph;
 import com.jmxgraph.domain.jmx.JmxObjectName;
 import com.jmxgraph.mbean.JmxAccessor;
@@ -43,14 +44,38 @@ public enum DefaultGraph {
 		
 			if (jmxObjectName == null) {
 				// Remove all attributes if they exist
-			} else {
-				// Create graph if it does not exist
 				if (jmxGraph == null) {
-					jmxGraph = new JmxGraph(graphType, multiplier, integerValue);
+					// Don't worry about it
+				} else {
+					// Remove the attributes
+					for (JmxAttribute jmxAttribute : jmxGraph.getAttributes()) {
+						repository.removeJmxGraphAttribute(jmxGraph.getGraphId(), jmxAttribute.getAttributeId());
+					}
+				}
+			} else {
+				// Create new graph if it does not exist
+				if (jmxGraph == null) {
+					// Reassign because we need the id
+					jmxGraph = repository.insertJmxGraph(new JmxGraph(this.name(), graphType, multiplier, integerValue));
 				}
 				
 				// Add attributes if they do not exist
+				for (JmxAttribute jmxAttribute : jmxObjectName.getAttributes()) {
+					if (attributeExists(jmxGraph, jmxAttribute)) {
+						continue;
+					}
+					repository.insertJmxGraphAttribute(jmxGraph.getGraphId(), jmxAttribute.getAttributeId());
+				}
 			}
 		}
+	}
+	
+	private boolean attributeExists(JmxGraph jmxGraph, JmxAttribute jmxAttribute) {
+		for (JmxAttribute sameAttribute : jmxGraph.getAttributes()) {
+			if (sameAttribute.getAttributeId() == jmxAttribute.getAttributeId()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

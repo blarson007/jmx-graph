@@ -23,6 +23,8 @@ public class JmxAttribute {
 	private Collection<JmxAttributeValue> attributeValues = new TreeSet<>();
 	private JmxAttributeProperties attributeProperties = new JmxAttributeProperties();
 	
+	private JmxObjectName jmxObjectName; // We will need a reference back to the parent in some cases
+	
 	public JmxAttribute(int attributeId, int objectNameId, String attributeName, String attributeType, String path, boolean enabled) {
 		this(attributeName, attributeType, path);
 		this.attributeId = attributeId;
@@ -70,6 +72,15 @@ public class JmxAttribute {
 	
 	public JmxAttributeProperties getAttributeProperties() {
 		return attributeProperties;
+	}
+	
+	public JmxObjectName getJmxObjectName() {
+		return jmxObjectName;
+	}
+	
+	public void setJmxObjectName(JmxObjectName jmxObjectName) {
+		// TODO: Set it manually for now. Try to work this into constructor, etc.
+		this.jmxObjectName = jmxObjectName;
 	}
 	
 	public String getGraphTypeProperty() {

@@ -272,7 +272,7 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 			
 			while (rs.next()) {
 				if (jmxGraph == null) {
-					jmxGraph = new JmxGraph(rs.getInt("graph_id"), rs.getString("graph_type"), rs.getInt("multiplier"), rs.getInt("integer_value") == 1);
+					jmxGraph = new JmxGraph(rs.getInt("graph_id"), rs.getString("graph_name"), rs.getString("graph_type"), rs.getInt("multiplier"), rs.getInt("integer_value") == 1);
 				}
 				jmxGraph.addAttribute(new JmxAttribute(rs.getInt("attribute_id"), rs.getInt("object_name_id"), rs.getString("attribute_name"), rs.getString("attribute_type"), rs.getString("path"), rs.getInt("enabled") == 1));
 			}
@@ -282,9 +282,72 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 	}
 
 	@Override
-	public JmxGraph insertJmxGraph(JmxGraph jmxGraph) {
+	public JmxGraph insertJmxGraph(final JmxGraph jmxGraph) {
+		final String insertSql = "INSERT INTO jmx_graph (graph_name, graph_type, multiplier, integer_value) VALUES (?, ?, ?, ?)";
+		KeyHolder holder = new GeneratedKeyHolder();
 		
-		return null;
+		jdbcTemplate.update(new PreparedStatementCreator() {
+				public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+					PreparedStatement preparedStatement = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
+					preparedStatement.setString(1, jmxGraph.getGraphName());
+					preparedStatement.setString(2, jmxGraph.getGraphType());
+					preparedStatement.setInt(3, jmxGraph.getMultiplier());
+					preparedStatement.setInt(4, jmxGraph.isIntegerValue() ? 1 : 0);
+					
+					return preparedStatement;
+				}
+		}, holder);
+		
+//		for (JmxAttribute jmxAttribute : jmxGraph.getAttributes()) {
+//			insertJmxGraphAttribute(holder.getKey().intValue(), jmxAttribute);
+//		}
+		
+		return new JmxGraph(holder.getKey().intValue(), jmxGraph.getGraphName(), jmxGraph.getGraphType(), jmxGraph.getMultiplier(), jmxGraph.isIntegerValue());
 	}
 	
+	@Override
+	public void insertJmxGraphAttribute(final int jmxGraphId, final int jmxAttributeId) {
+		jdbcTemplate.update("INSERT INTO jmx_graph_attribute VALUES (?, ?)", new Object[] { jmxGraphId, jmxAttributeId });
+	}
+	
+	@Override
+	public void removeJmxGraphAttribute(final int jmxGraphId, final int jmxAttributeId) {
+		jdbcTemplate.update("DELETE FROM jmx_graph_attribute WHERE jmx_graph_id = ? AND jmx_graph_attribute_id = ?", new Object[] { jmxGraphId, jmxAttributeId });
+	}
+	
+	@Override
+	public Collection<JmxGraph> getAllEnabledGraphs() {
+		String selectQuery =
+				"SELECT jon.object_name_id, jon.canonical_object_name, jon.description, ja.attribute_id, ja.attribute_name, ja.attribute_type, ja.path, ja.enabled, jg.graph_id, jg.graph_name, jg.graph_type, jg.multiplier, jg.integer_value " +
+				"FROM jmx_graph jg " +
+						"JOIN jmx_graph_attribute jga ON jg.graph_id = jga.graph_id " +
+						"JOIN jmx_attribute ja ON jga.attribute_id = ja.attribute_id " +
+						"JOIN jmx_object_name jon ON ja.object_name_id = jon.object_name_id " +
+				"WHERE ja.enabled = 1";
+		
+		return jdbcTemplate.query(selectQuery, new JmxGraphFullResultSetExtractor());
+	}
+	
+	public class JmxGraphFullResultSetExtractor implements ResultSetExtractor<Collection<JmxGraph>> {
+		public Collection<JmxGraph> extractData(ResultSet rs) throws SQLException, DataAccessException {
+			Map<Integer, JmxGraph> jmxGraphMap = new HashMap<>();
+			
+			while (rs.next()) {
+				int graphId = rs.getInt("graph_id");
+				
+				JmxGraph jmxGraph = jmxGraphMap.get(graphId);
+				if (jmxGraph == null) {
+					jmxGraph = new JmxGraph(graphId, rs.getString("graph_name"), rs.getString("graph_type"), rs.getInt("multiplier"), rs.getInt("integer_value") == 1);
+					jmxGraphMap.put(graphId, jmxGraph);
+				}
+				
+				JmxAttribute jmxAttribute = new JmxAttribute(rs.getInt("attribute_id"), rs.getInt("object_name_id"), rs.getString("attribute_name"), rs.getString("attribute_type"), rs.getString("path"), rs.getInt("enabled") == 1);
+				jmxAttribute.setJmxObjectName(new JmxObjectName(rs.getInt("object_name_id"), rs.getString("canonical_object_name"), rs.getString("description")));
+				
+				jmxGraph.getAttributes().add(jmxAttribute);
+			}
+			
+			return jmxGraphMap.values();
+		}
+	}
 }

@@ -40,4 +40,10 @@ public interface JmxAttributeRepository extends Initializable<DataSource> {
 	JmxGraph getJmxGraph(final String graphName);
 	
 	JmxGraph insertJmxGraph(JmxGraph jmxGraph);
+	
+	void insertJmxGraphAttribute(final int jmxGraphId, final int jmxAttributeId);
+	
+	void removeJmxGraphAttribute(final int jmxGraphId, final int jmxAttributeId);
+	
+	Collection<JmxGraph> getAllEnabledGraphs();
 }

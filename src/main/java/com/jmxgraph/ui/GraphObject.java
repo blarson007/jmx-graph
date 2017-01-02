@@ -6,9 +6,9 @@ public class GraphObject {
 
 	private Series[] series;
 	
-	public GraphObject(Series series) {
-		this.series = new Series[1];
-		this.series[0] = series;
+	public GraphObject(Series... series) {
+//		this.series = new Series[series.length];
+		this.series = series;
 	}
 	
 	public Series[] getSeries() {
