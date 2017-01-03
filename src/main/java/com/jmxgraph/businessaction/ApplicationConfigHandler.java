@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import com.jmxgraph.config.Initializable;
 import com.jmxgraph.domain.appconfig.ApplicationConfig;
 import com.jmxgraph.domain.appconfig.JmxConnectionConfig;
-import com.jmxgraph.domain.defaults.DefaultObject;
+import com.jmxgraph.domain.defaults.DefaultGraph;
 import com.jmxgraph.mbean.JmxAccessor;
 import com.jmxgraph.repository.appconfig.ApplicationConfigRepository;
 import com.jmxgraph.repository.appconfig.XmlApplicationConfigRepository;
@@ -85,7 +85,7 @@ public class ApplicationConfigHandler implements Initializable<ApplicationConfig
 		JmxAttributeRepository repository = JdbcAttributeRepository.getInstance();
 		JmxAccessor jmxAccessor = JmxAccessor.getInstance();
 		
-		for (DefaultObject object : DefaultObject.values()) {
+		for (DefaultGraph object : DefaultGraph.values()) {
 			object.handleObject(config, jmxAccessor, repository);
 		}
 	}

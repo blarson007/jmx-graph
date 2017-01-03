@@ -115,6 +115,7 @@ public class JmxAttribute {
 		return true;
 	}
 	
+	@Deprecated // Use buildGraphSeries instead
 	public JsonGraph getGraphObject(GraphFilter filter) {
 		if (!isNumericDataType()) {
 			return new JsonGraph("Cannot create a graph for a non-numeric data type");
@@ -141,8 +142,69 @@ public class JmxAttribute {
 		return new JsonGraph(new GraphObject(new Series(dataPoints)), filter.getLabelFormat(), getGraphTypeProperty(), getOnlyIntegerProperty());
 	}
 	
+	public Series buildGraphSeries() {
+		// TODO: Handle non-numeric data types
+		
+		DataPoint[] dataPoints = new DataPoint[attributeValues.size()];
+		
+		int index = 0;
+		for (JmxAttributeValue value : attributeValues) {
+			// This is a hack to get non integer values to display
+			try {
+				dataPoints[index] = new DataPoint(value.getTimestamp(), applyMultiplier(Integer.parseInt(String.valueOf(value.getAttributeValue()))));
+			} catch (NumberFormatException e) {
+				try {
+					dataPoints[index] = new DataPoint(value.getTimestamp(), applyMultiplier(Long.parseLong(String.valueOf(value.getAttributeValue()))));
+				} catch (NumberFormatException ne) {
+					dataPoints[index] = new DataPoint(value.getTimestamp(), applyMultiplier(Double.parseDouble(String.valueOf(value.getAttributeValue()))));
+				}
+			}
+			
+			index++;
+		}
+		
+		return new Series(dataPoints);
+	}
+	
 	private <N extends Number> Number applyMultiplier(N number) {
 		String multiplier = attributeProperties.get(JmxAttributeProperties.MULTIPLIER);
 		return multiplier == null ? number : Integer.parseInt(multiplier) * number.doubleValue();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((attributeName == null) ? 0 : attributeName.hashCode());
+		result = prime * result + ((attributeType == null) ? 0 : attributeType.hashCode());
+		result = prime * result + ((path == null) ? 0 : path.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		JmxAttribute other = (JmxAttribute) obj;
+		if (attributeName == null) {
+			if (other.attributeName != null)
+				return false;
+		} else if (!attributeName.equals(other.attributeName))
+			return false;
+		if (attributeType == null) {
+			if (other.attributeType != null)
+				return false;
+		} else if (!attributeType.equals(other.attributeType))
+			return false;
+		if (path == null) {
+			if (other.path != null)
+				return false;
+		} else if (!path.equals(other.path))
+			return false;
+		return true;
 	}
 }

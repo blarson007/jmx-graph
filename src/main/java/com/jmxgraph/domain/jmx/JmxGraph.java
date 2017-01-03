@@ -22,6 +22,7 @@ public class JmxGraph {
 	}
 	
 	public JmxGraph(String graphName, String graphType, int multiplier, boolean integerValue) {
+		this.graphName = graphName;
 		this.graphType = graphType;
 		this.multiplier = multiplier;
 		this.integerValue = integerValue;

@@ -1,5 +1,6 @@
 package com.jmxgraph.domain.defaults;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.management.AttributeNotFoundException;
@@ -8,6 +9,8 @@ import javax.management.IntrospectionException;
 import javax.management.MBeanException;
 import javax.management.MalformedObjectNameException;
 import javax.management.ReflectionException;
+
+import org.springframework.core.io.ClassPathResource;
 
 import com.jmxgraph.domain.appconfig.ApplicationConfig;
 import com.jmxgraph.domain.jmx.JmxAttribute;
@@ -21,20 +24,36 @@ public enum DefaultObject {
 		public boolean isEnabled(ApplicationConfig config) {
 			return config.isCpuPollingEnabled();
 		}
+		
+		public File getTemplateFile() throws IOException {
+			return new ClassPathResource("template/cpu-default-object.xml").getFile();
+		}
 	},
 	SYSTEM_CPU_LOAD("java.lang:type=OperatingSystem", "SystemCpuLoad", null) {
 		public boolean isEnabled(ApplicationConfig config) {
 			return config.isCpuPollingEnabled();
+		}
+		
+		public File getTemplateFile() throws IOException {
+			return new ClassPathResource("template/cpu-default-object.xml").getFile();
 		}
 	},
 	HEAP_MEMORY_USAGE("java.lang:type=Memory", "HeapMemoryUsage", new String[] { "committed", "used" }) {
 		public boolean isEnabled(ApplicationConfig config) {
 			return config.isMemoryPollingEnabled();
 		}
+		
+		public File getTemplateFile() throws IOException {
+			return new ClassPathResource("template/memory-default-object.xml").getFile();
+		}
 	}, 
 	THREAD_COUNT("java.lang:type=Threading", "ThreadCount", null) {
 		public boolean isEnabled(ApplicationConfig config) {
 			return config.isThreadPollingEnabled();
+		}
+		
+		public File getTemplateFile() throws IOException {
+			return new ClassPathResource("template/thread-default-object.xml").getFile();
 		}
 	};
 	
@@ -49,6 +68,7 @@ public enum DefaultObject {
 	}
 	
 	public abstract boolean isEnabled(ApplicationConfig config);
+	public abstract File getTemplateFile() throws IOException;
 	
 	public JmxObjectName handleObject(ApplicationConfig config, JmxAccessor jmxAccessor, JmxAttributeRepository repository) throws MalformedObjectNameException, 
 			InstanceNotFoundException, IntrospectionException, AttributeNotFoundException, ReflectionException, MBeanException, IOException {

@@ -1,0 +1,46 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="jmx_template">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="configuration"></xs:element>
+				<xs:element name="graphs" type="Graphs" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:complexType name="Graphs">
+		<xs:sequence>
+			<xs:element name="graph" type="Graph" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="Graph">
+		<xs:sequence>
+			<xs:element name="name" type="xs:string"></xs:element>
+			<xs:element name="mbeans" type="Mbeans" />
+			<xs:element name="graph_type" type="xs:string"></xs:element>
+			<xs:element name="graph_multiplier" type="xs:int"></xs:element>
+			<xs:element name="integer_value" type="xs:boolean" minOccurs="0" default="false"></xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="Mbeans">
+		<xs:sequence>
+			<xs:element name="mbean" type="MBean" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="MBean">
+		<xs:sequence>
+			<xs:element name="canonical_name" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="attribute_name" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<xs:element name="attribute_paths" type="AttributePaths" minOccurs="0" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="AttributePaths">
+		<xs:sequence>
+			<xs:element name="attribute_path" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

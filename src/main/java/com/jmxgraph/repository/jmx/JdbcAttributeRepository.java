@@ -8,8 +8,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -73,12 +75,13 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 				}
 		}, holder);
 		
+		Set<JmxAttribute> attributes = new HashSet<>();
 		for (JmxAttribute jmxAttribute : jmxObjectName.getAttributes()) {
-			JmxAttribute attribute = insertJmxAttribute(holder.getKey().intValue(), jmxAttribute);
-			insertJmxAttributeProperties(attribute.getAttributeId(), jmxAttribute.getAttributeProperties());
+			attributes.add(insertJmxAttribute(holder.getKey().intValue(), jmxAttribute));
+//			insertJmxAttributeProperties(attribute.getAttributeId(), jmxAttribute.getAttributeProperties());
 		}
 		
-		return new JmxObjectName(holder.getKey().intValue(), jmxObjectName.getCanonicalName(), jmxObjectName.getDescription());
+		return new JmxObjectName(holder.getKey().intValue(), jmxObjectName.getCanonicalName(), jmxObjectName.getDescription(), attributes);
 	}
 	
 	@Override
@@ -258,7 +261,7 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 	@Override
 	public JmxGraph getJmxGraph(final String graphName) {
 		String selectQuery =
-				"SELECT jg.graph_id, jg.graph_name, jg.graph_type, jg.multiplier, jg.integer_value, ja.attribute_id, ja.attribute_name, ja.attribute_type, ja.path, ja.enabled " +
+				"SELECT jg.graph_id, jg.graph_name, jg.graph_type, jg.multiplier, jg.integer_value, ja.attribute_id, ja.object_name_id, ja.attribute_name, ja.attribute_type, ja.path, ja.enabled " +
 				"FROM jmx_graph jg " +
 						"JOIN jmx_graph_attribute jga ON jg.graph_id = jga.graph_id " +
 						"JOIN jmx_attribute ja ON jga.attribute_id = ja.attribute_id " +
@@ -279,6 +282,17 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 			
 			return jmxGraph;
 		}
+	}
+	
+	@Override
+	public JmxGraph getJmxGraph(final int graphId) {
+		String selectQuery =
+				"SELECT jg.graph_id, jg.graph_name, jg.graph_type, jg.multiplier, jg.integer_value, ja.attribute_id, ja.object_name_id, ja.attribute_name, ja.attribute_type, ja.path, ja.enabled " +
+				"FROM jmx_graph jg " +
+						"JOIN jmx_graph_attribute jga ON jg.graph_id = jga.graph_id " +
+						"JOIN jmx_attribute ja ON jga.attribute_id = ja.attribute_id " +
+				"WHERE jg.graph_id = ?";
+		return jdbcTemplate.query(selectQuery, new Object[] { graphId }, new JmxGraphResultSetExtractor());
 	}
 
 	@Override
@@ -349,5 +363,11 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 			
 			return jmxGraphMap.values();
 		}
+	}
+
+	@Override
+	public void saveOrUpdate(JmxObjectName jmxObjectName) {
+		// TODO Auto-generated method stub
+		
 	}
 }

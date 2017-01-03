@@ -18,31 +18,31 @@
     			pollGraph();
     		});
     		
-    		function showHideGraph(attributeId) {
-				var buttonTxt = $('#showHide' + attributeId).text();
+    		function showHideGraph(graphId) {
+				var buttonTxt = $('#showHide' + graphId).text();
 				
     			if (buttonTxt == 'View') {
-    				$('#showHide' + attributeId).html('Hide');
+    				$('#showHide' + graphId).html('Hide');
     				
-    				executeGet(attributeId);
+    				executeGet(graphId);
     				
-    				if ($.inArray(attributeId, currentAttributes) == -1) {
-    					currentAttributes.push(attributeId);
+    				if ($.inArray(graphId, currentAttributes) == -1) {
+    					currentAttributes.push(graphId);
     				}
     			} else {
-    				$('#graph' + attributeId).html('');
-    				$('#showHide' + attributeId).html('View');
+    				$('#graph' + graphId).html('');
+    				$('#showHide' + graphId).html('View');
     				
-    				removePath(attributeId);
+    				removePath(graphId);
     			}
     		}
     		
     		function pollGraph() {
     			try {
 	   				for (i = 0; i < currentAttributes.length; i++) {
-	   					var attributeId = currentAttributes[i];
+	   					var graphId = currentAttributes[i];
 	   				
-	   					executeGet(attributeId);
+	   					executeGet(graphId);
 	   				}
 	   				setTimeout(pollGraph, ${pollIntervalMs});
     			} catch (err) {
@@ -50,17 +50,17 @@
     			}	
     		}
     		
-    		function executeGet(attributeId) {
-    			var filterId = $('#attributeFilter' + attributeId).val();
-    			$.get('jmx-attribute-graph-ajax.html', {
-					attributeId: attributeId,
+    		function executeGet(graphId) {
+    			var filterId = $('#graphFilter' + graphId).val();
+    			$.get('jmx-graph-ajax.html', {
+    				graphId: graphId,
 					filterId: filterId
 				}, function(jsonResponse) {
 					if (jsonResponse.errorMessage != null) {
-						$('#graph' + attributeId).html(jsonResponse.errorMessage);
-						removePath(attributeId);
+						$('#graph' + graphId).html(jsonResponse.errorMessage);
+						removePath(graphId);
 					} else {
-						new Chartist.Line('#graph' + attributeId, jsonResponse.graphObject, {
+						new Chartist.Line('#graph' + graphId, jsonResponse.graphObject, {
 							showPoint: false,
 							axisX: {
 							    type: Chartist.FixedScaleAxis,
@@ -86,17 +86,17 @@
 				});
     		}
     		
-    		function removePath(attributeId) {
-    			var index = $.inArray(attributeId, currentAttributes);
+    		function removePath(graphId) {
+    			var index = $.inArray(graphId, currentAttributes);
 	       		if (index > -1) {
 	       			currentAttributes.splice(index, 1);
 	       		}
     		}
     		
-    		function setFilter(attributeId, filterId) {
-    			$('#attributeFilter' + attributeId).val(filterId);
-    			if ($('#showHide' + attributeId).text() == 'Hide') {
-    				executeGet(attributeId);
+    		function setFilter(graphId, filterId) {
+    			$('#graphFilter' + graphId).val(filterId);
+    			if ($('#showHide' + graphId).text() == 'Hide') {
+    				executeGet(graphId);
     			}
     		}
     		
@@ -110,7 +110,7 @@
    			}
     	</script>	
         <div class="container">
-            <h2>Attributes</h2>
+            <h2>Graphs</h2>
             <c:choose>
 				<c:when test="${empty jmxConfigured}">
 	            	<table class="table">
@@ -130,33 +130,30 @@
 		            <table class="table table-striped">
 		                <thead>
 		                    <tr>
-		                        <td style="font-weight: bold">Object Name</td>
-		                        <td style="font-weight: bold">Attribute</td>
+		                        <td style="font-weight: bold">Graph Name</td>
+		                        <td style="font-weight: bold"></td>
 		                        <td></td>
 		                        <td></td>
 		                    </tr>
 		                </thead>
-		                <c:forEach var="jmxObjectName" items="${jmxList}">
-		                	<c:forEach var="jmxAttribute" items="${jmxObjectName.attributes}">
-			                    <tr>
-			                        <td>${jmxObjectName.canonicalName}</td>
-			                        <td>${jmxAttribute.attributeDescription}</td>
-			                        <td class="dropdown">
-			                        	<button id="attributeFilter${jmxAttribute.attributeId}" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" value="1">Filter</button>
-									    <ul class="dropdown-menu">
-									    	<c:forEach var="filter" items="${filters}">
-									    		<li><a href="#" onclick="setFilter('${jmxAttribute.attributeId}', '${filter.filterId}');">${filter.description}</a></li>
-									    	</c:forEach>
-									    </ul>
-			                        </td>
-			                        <td>
-			                        	<button id="showHide${jmxAttribute.attributeId}" type="submit" class="btn btn-primary" onclick="showHideGraph('${jmxAttribute.attributeId}');">View</button>
-			                        </td>
-			                    </tr>
-			                    <tr>
-			                    	<td colspan="4" id="graph${jmxAttribute.attributeId}"></td>
-			                    </tr>
-		                    </c:forEach>
+		                <c:forEach var="jmxGraph" items="${jmxList}">
+		                    <tr>
+		                        <td>${jmxGraph.graphName}</td>
+		                        <td class="dropdown">
+		                        	<button id="graphFilter${jmxGraph.graphId}" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" value="1">Filter</button>
+								    <ul class="dropdown-menu">
+								    	<c:forEach var="filter" items="${filters}">
+								    		<li><a href="#" onclick="setFilter('${jmxGraph.graphId}', '${filter.filterId}');">${filter.description}</a></li>
+								    	</c:forEach>
+								    </ul>
+		                        </td>
+		                        <td>
+		                        	<button id="showHide${jmxGraph.graphId}" type="submit" class="btn btn-primary" onclick="showHideGraph('${jmxGraph.graphId}');">View</button>
+		                        </td>
+		                    </tr>
+		                    <tr>
+		                    	<td colspan="4" id="graph${jmxGraph.graphId}"></td>
+		                    </tr>
 		                </c:forEach>               
 		            </table>
 				</c:otherwise> 

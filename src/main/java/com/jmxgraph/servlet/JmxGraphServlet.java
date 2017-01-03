@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,13 +16,14 @@ import com.jmxgraph.repository.jmx.JdbcAttributeRepository;
 import com.jmxgraph.repository.jmx.JmxAttributeRepository;
 import com.jmxgraph.ui.GraphFilter;
 
+@WebServlet(name = "JmxGraphServlet", urlPatterns = { "/jmx-graph.html" })
 public class JmxGraphServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 4667524598138572747L;
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/jsp/jmx-mbean-graph.jsp");
+		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/jsp/jmx-graph.jsp");
 		
 		JmxAttributeRepository repository = JdbcAttributeRepository.getInstance();
 		PollScheduler pollScheduler = PollScheduler.getInstance();

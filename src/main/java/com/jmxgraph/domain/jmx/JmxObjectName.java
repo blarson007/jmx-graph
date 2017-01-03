@@ -13,7 +13,11 @@ public class JmxObjectName {
 	private Set<JmxAttribute> attributes;
 	
 	public JmxObjectName(final int objectNameId, final String canonicalName, final String description) {
-		this(canonicalName, description, new HashSet<JmxAttribute>());
+		this(objectNameId, canonicalName, description, new HashSet<JmxAttribute>());
+	}
+	
+	public JmxObjectName(final int objectNameId, final String canonicalName, final String description, Set<JmxAttribute> attributes) {
+		this(canonicalName, description, attributes);
 		this.objectNameId = objectNameId;
 	}
 	
@@ -60,5 +64,27 @@ public class JmxObjectName {
 		for (JmxAttribute attribute : attributes) {
 			attribute.getAttributeProperties().putAll(attributeProperties);
 		}
+	}
+	
+	public JmxObjectName merge(JmxObjectName other) {
+		if (!canonicalName.equals(other.getCanonicalName())) {
+			throw new IllegalArgumentException("JMX Objects cannot be merged unless they have the same canonical name");
+		}
+		
+		for (JmxAttribute attribute : other.getAttributes()) {
+			if (!this.containsAttribute(attribute)) {
+				addAttribute(attribute);
+			}
+		}
+		return this;
+	}
+	
+	private boolean containsAttribute(JmxAttribute attribute) {
+		for (JmxAttribute jmxAttribute : attributes) {
+			if (jmxAttribute.equals(attribute)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

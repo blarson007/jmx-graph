@@ -1,0 +1,20 @@
+<jmx_template>
+	<configuration></configuration>
+	<graphs>
+		<graph>
+			<name>Memory Monitoring</name>
+			<mbeans>
+				<mbean>
+					<canonical_name>java.lang:type=Memory</canonical_name>
+					<attribute_name>HeapMemoryUsage</attribute_name>
+					<attribute_paths>
+						<attribute_path>committed</attribute_path>
+						<attribute_path>used</attribute_path>	
+					</attribute_paths>
+				</mbean>
+			</mbeans>
+			<graph_type>memory</graph_type>
+			<integer_value>false</integer_value>
+		</graph>
+	</graphs>
+</jmx_template>

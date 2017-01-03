@@ -18,16 +18,18 @@ import com.jmxgraph.repository.jmx.JmxAttributeRepository;
 
 public enum DefaultGraph {
 
-	CPU_GRAPH(JmxGraph.GRAPH_TYPE_PERCENTAGE, 1000, false, DefaultObject.PROCESS_CPU_LOAD, DefaultObject.SYSTEM_CPU_LOAD), 
-	MEMORY_GRAPH(JmxGraph.GRAPH_TYPE_MEMORY, 1, false, DefaultObject.HEAP_MEMORY_USAGE), 
-	THREAD_GRAPH(JmxGraph.GRAPH_TYPE_NONE, 1, true, DefaultObject.THREAD_COUNT);
+	CPU_GRAPH("CPU Monitoring", JmxGraph.GRAPH_TYPE_PERCENTAGE, 1000, false, DefaultObject.PROCESS_CPU_LOAD, DefaultObject.SYSTEM_CPU_LOAD), 
+	MEMORY_GRAPH("Memory Monitoring", JmxGraph.GRAPH_TYPE_MEMORY, 1, false, DefaultObject.HEAP_MEMORY_USAGE), 
+	THREAD_GRAPH("Thread Monitoring", JmxGraph.GRAPH_TYPE_NONE, 1, true, DefaultObject.THREAD_COUNT);
 	
+	private String graphName;
 	private String graphType;
 	private int multiplier;
 	private boolean integerValue;
 	private DefaultObject[] defaultObjects;
 	
-	DefaultGraph(String graphType, int multiplier, boolean integerValue, DefaultObject...defaultObjects) {
+	DefaultGraph(String graphName, String graphType, int multiplier, boolean integerValue, DefaultObject...defaultObjects) {
+		this.graphName = graphName;
 		this.graphType = graphType;
 		this.multiplier = multiplier;
 		this.integerValue = integerValue;
@@ -40,7 +42,10 @@ public enum DefaultGraph {
 		JmxGraph jmxGraph = null;
 		for (DefaultObject defaultObject : defaultObjects) {
 			JmxObjectName jmxObjectName = defaultObject.handleObject(config, jmxAccessor, repository);
-			jmxGraph = repository.getJmxGraph(this.name());
+			
+			if (jmxGraph == null) {
+				jmxGraph = repository.getJmxGraph(graphName);
+			}	
 		
 			if (jmxObjectName == null) {
 				// Remove all attributes if they exist
@@ -49,6 +54,7 @@ public enum DefaultGraph {
 				} else {
 					// Remove the attributes
 					for (JmxAttribute jmxAttribute : jmxGraph.getAttributes()) {
+						System.out.println("Removing attribute: " + jmxAttribute.getAttributeId() + " for graph: " + jmxGraph.getGraphId());
 						repository.removeJmxGraphAttribute(jmxGraph.getGraphId(), jmxAttribute.getAttributeId());
 					}
 				}
@@ -56,7 +62,7 @@ public enum DefaultGraph {
 				// Create new graph if it does not exist
 				if (jmxGraph == null) {
 					// Reassign because we need the id
-					jmxGraph = repository.insertJmxGraph(new JmxGraph(this.name(), graphType, multiplier, integerValue));
+					jmxGraph = repository.insertJmxGraph(new JmxGraph(graphName, graphType, multiplier, integerValue));
 				}
 				
 				// Add attributes if they do not exist
@@ -64,6 +70,7 @@ public enum DefaultGraph {
 					if (attributeExists(jmxGraph, jmxAttribute)) {
 						continue;
 					}
+					System.out.println("Adding attribute: " + jmxAttribute.getAttributeId() + " (" + jmxAttribute.getAttributeName() + ") " + " for graph: " + jmxGraph.getGraphId());
 					repository.insertJmxGraphAttribute(jmxGraph.getGraphId(), jmxAttribute.getAttributeId());
 				}
 			}
