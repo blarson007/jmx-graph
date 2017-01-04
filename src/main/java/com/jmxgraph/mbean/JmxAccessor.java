@@ -1,6 +1,7 @@
 package com.jmxgraph.mbean;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -92,6 +93,15 @@ public class JmxAccessor implements Initializable<JmxConnectionConfig> {
 		}
 		
 		return objectNames;
+	}
+	
+	public JmxObjectName lookupAttribute(String objectName, String attribute, Collection<String> paths) throws MalformedObjectNameException, InstanceNotFoundException, 
+			IntrospectionException, ReflectionException, IOException, AttributeNotFoundException, MBeanException {
+		String[] pathArray = null;
+		if (paths != null) {
+			pathArray = (String[]) paths.toArray();
+		}
+		return lookupAttribute(objectName, attribute, pathArray);
 	}
 	
 	public JmxObjectName lookupAttribute(String objectName, String attribute, String... paths) throws MalformedObjectNameException, InstanceNotFoundException, 

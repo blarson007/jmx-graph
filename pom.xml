@@ -126,6 +126,10 @@
 				<directory>src/main/resources/sql</directory>
 				<targetPath>sql</targetPath>
 			</resource>
+			<resource>
+				<directory>src/main/resources/template</directory>
+				<targetPath>template</targetPath>
+			</resource>
 		</resources>
 		<plugins>
 			<plugin>

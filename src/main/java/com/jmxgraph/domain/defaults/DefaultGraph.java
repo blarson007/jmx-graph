@@ -1,6 +1,7 @@
 package com.jmxgraph.domain.defaults;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
@@ -18,7 +19,7 @@ import com.jmxgraph.repository.jmx.JmxAttributeRepository;
 
 public enum DefaultGraph {
 
-	CPU_GRAPH("CPU Monitoring", JmxGraph.GRAPH_TYPE_PERCENTAGE, 1000, false, DefaultObject.PROCESS_CPU_LOAD, DefaultObject.SYSTEM_CPU_LOAD), 
+	CPU_GRAPH("CPU Monitoring", JmxGraph.GRAPH_TYPE_PERCENTAGE, 1000, false, DefaultObject.PROCESS_CPU_LOAD), 
 	MEMORY_GRAPH("Memory Monitoring", JmxGraph.GRAPH_TYPE_MEMORY, 1, false, DefaultObject.HEAP_MEMORY_USAGE), 
 	THREAD_GRAPH("Thread Monitoring", JmxGraph.GRAPH_TYPE_NONE, 1, true, DefaultObject.THREAD_COUNT);
 	
@@ -62,7 +63,7 @@ public enum DefaultGraph {
 				// Create new graph if it does not exist
 				if (jmxGraph == null) {
 					// Reassign because we need the id
-					jmxGraph = repository.insertJmxGraph(new JmxGraph(graphName, graphType, multiplier, integerValue));
+					jmxGraph = repository.insertJmxGraph(new JmxGraph(graphName, graphType, multiplier, integerValue, new HashSet<JmxAttribute>()));
 				}
 				
 				// Add attributes if they do not exist

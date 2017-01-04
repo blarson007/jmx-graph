@@ -16,17 +16,22 @@ public class JmxGraph {
 	private boolean integerValue;
 	private Collection<JmxAttribute> attributes;
 	
-	public JmxGraph(int graphId, String graphName, String graphType, int multiplier, boolean integerValue) {
-		this(graphName, graphType, multiplier, integerValue);
+	public JmxGraph(int graphId, String graphName, String graphType, int multiplier, boolean integerValue, Collection<JmxAttribute> attributes) {
+		this(graphName, graphType, multiplier, integerValue, attributes);
 		this.graphId = graphId;
 	}
 	
-	public JmxGraph(String graphName, String graphType, int multiplier, boolean integerValue) {
+	public JmxGraph(int graphId, String graphName, String graphType, int multiplier, boolean integerValue) {
+		this(graphName, graphType, multiplier, integerValue, new HashSet<JmxAttribute>());
+		this.graphId = graphId;
+	}
+	
+	public JmxGraph(String graphName, String graphType, int multiplier, boolean integerValue, Collection<JmxAttribute> attributes) {
 		this.graphName = graphName;
 		this.graphType = graphType;
 		this.multiplier = multiplier;
 		this.integerValue = integerValue;
-		this.attributes = new HashSet<>();
+		this.attributes = attributes;
 	}
 	
 	public int getGraphId() {
@@ -55,5 +60,14 @@ public class JmxGraph {
 	
 	public void addAttribute(JmxAttribute jmxAttribute) {
 		attributes.add(jmxAttribute);
+	}
+	
+	public boolean containsAttribute(JmxAttribute attribute) {
+		for (JmxAttribute jmxAttribute : attributes) {
+			if (jmxAttribute.equals(attribute)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

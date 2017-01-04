@@ -1,7 +1,7 @@
 package com.jmxgraph.domain.defaults;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
@@ -25,26 +25,26 @@ public enum DefaultObject {
 			return config.isCpuPollingEnabled();
 		}
 		
-		public File getTemplateFile() throws IOException {
-			return new ClassPathResource("template/cpu-default-object.xml").getFile();
+		public InputStream getTemplateFile() throws IOException {
+			return new ClassPathResource("template/cpu-default-object.xml").getInputStream();
 		}
 	},
-	SYSTEM_CPU_LOAD("java.lang:type=OperatingSystem", "SystemCpuLoad", null) {
-		public boolean isEnabled(ApplicationConfig config) {
-			return config.isCpuPollingEnabled();
-		}
-		
-		public File getTemplateFile() throws IOException {
-			return new ClassPathResource("template/cpu-default-object.xml").getFile();
-		}
-	},
+//	SYSTEM_CPU_LOAD("java.lang:type=OperatingSystem", "SystemCpuLoad", null) {
+//		public boolean isEnabled(ApplicationConfig config) {
+//			return config.isCpuPollingEnabled();
+//		}
+//		
+//		public InputStream getTemplateFile() throws IOException {
+//			return new ClassPathResource("template/cpu-default-object.xml").getInputStream();
+//		}
+//	},
 	HEAP_MEMORY_USAGE("java.lang:type=Memory", "HeapMemoryUsage", new String[] { "committed", "used" }) {
 		public boolean isEnabled(ApplicationConfig config) {
 			return config.isMemoryPollingEnabled();
 		}
 		
-		public File getTemplateFile() throws IOException {
-			return new ClassPathResource("template/memory-default-object.xml").getFile();
+		public InputStream getTemplateFile() throws IOException {
+			return new ClassPathResource("template/memory-default-object.xml").getInputStream();
 		}
 	}, 
 	THREAD_COUNT("java.lang:type=Threading", "ThreadCount", null) {
@@ -52,8 +52,8 @@ public enum DefaultObject {
 			return config.isThreadPollingEnabled();
 		}
 		
-		public File getTemplateFile() throws IOException {
-			return new ClassPathResource("template/thread-default-object.xml").getFile();
+		public InputStream getTemplateFile() throws IOException {
+			return new ClassPathResource("template/thread-default-object.xml").getInputStream();
 		}
 	};
 	
@@ -68,7 +68,7 @@ public enum DefaultObject {
 	}
 	
 	public abstract boolean isEnabled(ApplicationConfig config);
-	public abstract File getTemplateFile() throws IOException;
+	public abstract InputStream getTemplateFile() throws IOException;
 	
 	public JmxObjectName handleObject(ApplicationConfig config, JmxAccessor jmxAccessor, JmxAttributeRepository repository) throws MalformedObjectNameException, 
 			InstanceNotFoundException, IntrospectionException, AttributeNotFoundException, ReflectionException, MBeanException, IOException {

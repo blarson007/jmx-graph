@@ -312,11 +312,11 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 				}
 		}, holder);
 		
-//		for (JmxAttribute jmxAttribute : jmxGraph.getAttributes()) {
-//			insertJmxGraphAttribute(holder.getKey().intValue(), jmxAttribute);
-//		}
+		for (JmxAttribute jmxAttribute : jmxGraph.getAttributes()) {
+			insertJmxGraphAttribute(holder.getKey().intValue(), jmxAttribute.getAttributeId());
+		}
 		
-		return new JmxGraph(holder.getKey().intValue(), jmxGraph.getGraphName(), jmxGraph.getGraphType(), jmxGraph.getMultiplier(), jmxGraph.isIntegerValue());
+		return new JmxGraph(holder.getKey().intValue(), jmxGraph.getGraphName(), jmxGraph.getGraphType(), jmxGraph.getMultiplier(), jmxGraph.isIntegerValue(), jmxGraph.getAttributes());
 	}
 	
 	@Override

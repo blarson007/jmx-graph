@@ -1,9 +1,8 @@
 <jmx_template>
-	<configuration></configuration>
 	<graphs>
 		<graph>
-			<name>CPU Monitoring</name>
-			<means>
+			<graph_name>CPU Monitoring</graph_name>
+			<mbeans>
 				<mbean>
 					<canonical_name>java.lang:type=OperatingSystem</canonical_name>
 					<attribute_name>ProcessCpuLoad</attribute_name>
@@ -12,7 +11,7 @@
 					<canonical_name>java.lang:type=OperatingSystem</canonical_name>
 					<attribute_name>SystemCpuLoad</attribute_name>
 				</mbean>
-			</means>
+			</mbeans>
 			<graph_type>percentage</graph_type>
 			<graph_multiplier>1000</graph_multiplier>
 			<integer_value>false</integer_value>

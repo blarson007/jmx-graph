@@ -1,8 +1,7 @@
 <jmx_template>
-	<configuration></configuration>
 	<graphs>
 		<graph>
-			<name>Thread Monitoring</name>
+			<graph_name>Thread Monitoring</graph_name>
 			<mbeans>
 				<mbean>
 					<canonical_name>java.lang:type=Threading</canonical_name>

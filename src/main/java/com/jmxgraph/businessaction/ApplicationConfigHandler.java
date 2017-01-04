@@ -52,7 +52,8 @@ public class ApplicationConfigHandler implements Initializable<ApplicationConfig
 
 		startJmx(newConfig.getJmxConnectionConfig());
 		
-		populateDefaultObjects(newConfig);
+//		populateDefaultObjects(newConfig);
+		JmxTemplateHandler.getInstance().processDefaultJmxTemplates();
 		
 		startPoller(newConfig.getPollIntervalInSeconds());
 	}

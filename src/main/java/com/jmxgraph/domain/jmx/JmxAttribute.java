@@ -207,4 +207,12 @@ public class JmxAttribute {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "JmxAttribute [attributeId=" + attributeId + ", objectNameId=" + objectNameId + ", attributeName="
+				+ attributeName + ", attributeType=" + attributeType + ", path=" + path + ", enabled=" + enabled
+				+ ", attributeValues=" + attributeValues + ", attributeProperties=" + attributeProperties
+				+ ", jmxObjectName=" + jmxObjectName + "]";
+	}
 }

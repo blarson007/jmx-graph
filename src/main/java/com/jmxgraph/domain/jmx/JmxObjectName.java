@@ -79,7 +79,7 @@ public class JmxObjectName {
 		return this;
 	}
 	
-	private boolean containsAttribute(JmxAttribute attribute) {
+	public boolean containsAttribute(JmxAttribute attribute) {
 		for (JmxAttribute jmxAttribute : attributes) {
 			if (jmxAttribute.equals(attribute)) {
 				return true;

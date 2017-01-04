@@ -1,8 +1,7 @@
 <jmx_template>
-	<configuration></configuration>
 	<graphs>
 		<graph>
-			<name>Memory Monitoring</name>
+			<graph_name>Memory Monitoring</graph_name>
 			<mbeans>
 				<mbean>
 					<canonical_name>java.lang:type=Memory</canonical_name>
