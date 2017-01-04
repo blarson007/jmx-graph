@@ -1,8 +1,5 @@
 package com.jmxgraph.businessaction;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import com.jmxgraph.domain.jmx.JmxAttribute;
 import com.jmxgraph.domain.jmx.JmxGraph;
 import com.jmxgraph.repository.jmx.JdbcAttributeRepository;
@@ -25,14 +22,18 @@ public class JmxGraphHandler {
 	}
 	
 	public JsonGraph buildGraph(int graphId, GraphFilter filter) {
-		Collection<Series> seriesCollection = new HashSet<>();
 		JmxAttributeRepository repository = JdbcAttributeRepository.getInstance();
 		
 		JmxGraph jmxGraph = repository.getJmxGraph(graphId);
+		Series[] seriesArray = new Series[jmxGraph.getAttributes().size()];
+		
+		int index = 0;
 		for (JmxAttribute jmxAttribute : jmxGraph.getAttributes()) {
-			seriesCollection.add(jmxAttribute.buildGraphSeries());
+			JmxAttribute jmxAttributeWithValue = repository.getJmxAttributeValuesByAttributeId(jmxAttribute.getAttributeId(), filter);
+			seriesArray[index] = jmxAttributeWithValue.buildGraphSeries();
+			index++;
 		}
 		
-		return new JsonGraph(new GraphObject((Series[])seriesCollection.toArray()), filter.getLabelFormat(), jmxGraph.getGraphType(), jmxGraph.isIntegerValue());
+		return new JsonGraph(new GraphObject(seriesArray), filter.getLabelFormat(), jmxGraph.getGraphType(), jmxGraph.isIntegerValue());
 	}
 }

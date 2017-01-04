@@ -263,8 +263,8 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 		String selectQuery =
 				"SELECT jg.graph_id, jg.graph_name, jg.graph_type, jg.multiplier, jg.integer_value, ja.attribute_id, ja.object_name_id, ja.attribute_name, ja.attribute_type, ja.path, ja.enabled " +
 				"FROM jmx_graph jg " +
-						"JOIN jmx_graph_attribute jga ON jg.graph_id = jga.graph_id " +
-						"JOIN jmx_attribute ja ON jga.attribute_id = ja.attribute_id " +
+						"LEFT JOIN jmx_graph_attribute jga ON jg.graph_id = jga.graph_id " +
+						"LEFT JOIN jmx_attribute ja ON jga.attribute_id = ja.attribute_id " +
 				"WHERE jg.graph_name = ?";
 		return jdbcTemplate.query(selectQuery, new Object[] { graphName }, new JmxGraphResultSetExtractor());
 	}
