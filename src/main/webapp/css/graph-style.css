@@ -1,3 +1,19 @@
 .ct-line {
 	stroke-width: 1px;
 }
+
+.ct-series-a .ct-line {
+	stroke: red;
+}
+
+.ct-series-b .ct-line {
+	stroke: blue;
+}
+
+.ct-series-c .ct-line {
+	stroke: green;
+}
+
+.ct-seriesd .ct-line {
+	stroke: yellow;
+}

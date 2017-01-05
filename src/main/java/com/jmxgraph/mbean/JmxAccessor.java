@@ -99,7 +99,12 @@ public class JmxAccessor implements Initializable<JmxConnectionConfig> {
 			IntrospectionException, ReflectionException, IOException, AttributeNotFoundException, MBeanException {
 		String[] pathArray = null;
 		if (paths != null) {
-			pathArray = (String[]) paths.toArray();
+			pathArray = new String[paths.size()];
+			int index = 0;
+			for (String path : paths) {
+				pathArray[index] = path;
+				index++;
+			}
 		}
 		return lookupAttribute(objectName, attribute, pathArray);
 	}

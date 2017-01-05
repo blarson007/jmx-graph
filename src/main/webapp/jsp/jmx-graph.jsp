@@ -12,7 +12,7 @@
     	<script src="../bower_components/chartist/dist/chartist.min.js"></script>
     	<script src="../js/moment.min.js"></script>
     	<script>
-    		var currentAttributes = [];
+    		var currentGraphs = [];
     		
     		$(document).ready(function() {
     			pollGraph();
@@ -26,8 +26,8 @@
     				
     				executeGet(graphId);
     				
-    				if ($.inArray(graphId, currentAttributes) == -1) {
-    					currentAttributes.push(graphId);
+    				if ($.inArray(graphId, currentGraphs) == -1) {
+    					currentGraphs.push(graphId);
     				}
     			} else {
     				$('#graph' + graphId).html('');
@@ -39,8 +39,8 @@
     		
     		function pollGraph() {
     			try {
-	   				for (i = 0; i < currentAttributes.length; i++) {
-	   					var graphId = currentAttributes[i];
+	   				for (i = 0; i < currentGraphs.length; i++) {
+	   					var graphId = currentGraphs[i];
 	   				
 	   					executeGet(graphId);
 	   				}
@@ -87,9 +87,9 @@
     		}
     		
     		function removePath(graphId) {
-    			var index = $.inArray(graphId, currentAttributes);
+    			var index = $.inArray(graphId, currentGraphs);
 	       		if (index > -1) {
-	       			currentAttributes.splice(index, 1);
+	       			currentGraphs.splice(index, 1);
 	       		}
     		}
     		
@@ -131,7 +131,7 @@
 		                <thead>
 		                    <tr>
 		                        <td style="font-weight: bold">Graph Name</td>
-		                        <td style="font-weight: bold"></td>
+		                        <td style="font-weight: bold">&nbsp;</td>
 		                        <td></td>
 		                        <td></td>
 		                    </tr>
@@ -139,6 +139,7 @@
 		                <c:forEach var="jmxGraph" items="${jmxList}">
 		                    <tr>
 		                        <td>${jmxGraph.graphName}</td>
+		                        <td>&nbsp;</td>
 		                        <td class="dropdown">
 		                        	<button id="graphFilter${jmxGraph.graphId}" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" value="1">Filter</button>
 								    <ul class="dropdown-menu">

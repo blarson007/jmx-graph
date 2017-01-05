@@ -13,7 +13,7 @@
 				</mbean>
 			</mbeans>
 			<graph_type>percentage</graph_type>
-			<graph_multiplier>1000</graph_multiplier>
+			<graph_multiplier>100</graph_multiplier>
 			<integer_value>false</integer_value>
 		</graph>
 	</graphs>

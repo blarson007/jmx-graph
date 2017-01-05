@@ -20,7 +20,8 @@ public class GraphTemplate {
 	@XmlElement(name = "graph_type", defaultValue = "none")
 	private String graphType;
 	
-	private int multiplier;
+	@XmlElement(name = "graph_multiplier", defaultValue = "1")
+	private int multiplier = 1;
 	
 	@XmlElement(name = "integer_value", defaultValue = "false")
 	private boolean integerValue;

@@ -142,7 +142,8 @@ public class JmxAttribute {
 		return new JsonGraph(new GraphObject(new Series(dataPoints)), filter.getLabelFormat(), getGraphTypeProperty(), getOnlyIntegerProperty());
 	}
 	
-	public Series buildGraphSeries() {
+	public Series buildGraphSeries(int multiplier) {
+		if (multiplier <= 0) { multiplier = 1; }
 		// TODO: Handle non-numeric data types
 		
 		DataPoint[] dataPoints = new DataPoint[attributeValues.size()];
@@ -151,12 +152,12 @@ public class JmxAttribute {
 		for (JmxAttributeValue value : attributeValues) {
 			// This is a hack to get non integer values to display
 			try {
-				dataPoints[index] = new DataPoint(value.getTimestamp(), applyMultiplier(Integer.parseInt(String.valueOf(value.getAttributeValue()))));
+				dataPoints[index] = new DataPoint(value.getTimestamp(), multiplier * Integer.parseInt(String.valueOf(value.getAttributeValue())));
 			} catch (NumberFormatException e) {
 				try {
-					dataPoints[index] = new DataPoint(value.getTimestamp(), applyMultiplier(Long.parseLong(String.valueOf(value.getAttributeValue()))));
+					dataPoints[index] = new DataPoint(value.getTimestamp(), multiplier * Long.parseLong(String.valueOf(value.getAttributeValue())));
 				} catch (NumberFormatException ne) {
-					dataPoints[index] = new DataPoint(value.getTimestamp(), applyMultiplier(Double.parseDouble(String.valueOf(value.getAttributeValue()))));
+					dataPoints[index] = new DataPoint(value.getTimestamp(), multiplier * Double.parseDouble(String.valueOf(value.getAttributeValue())));
 				}
 			}
 			

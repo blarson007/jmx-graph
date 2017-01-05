@@ -30,7 +30,7 @@ public class JmxGraphHandler {
 		int index = 0;
 		for (JmxAttribute jmxAttribute : jmxGraph.getAttributes()) {
 			JmxAttribute jmxAttributeWithValue = repository.getJmxAttributeValuesByAttributeId(jmxAttribute.getAttributeId(), filter);
-			seriesArray[index] = jmxAttributeWithValue.buildGraphSeries();
+			seriesArray[index] = jmxAttributeWithValue.buildGraphSeries(jmxGraph.getMultiplier());
 			index++;
 		}
 		
