@@ -16,6 +16,7 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -24,7 +25,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import com.jmxgraph.domain.JmxAttributeProperties;
 import com.jmxgraph.domain.jmx.JmxAttribute;
 import com.jmxgraph.domain.jmx.JmxAttributeValue;
 import com.jmxgraph.domain.jmx.JmxGraph;
@@ -114,13 +114,6 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 				});
 	}
 	
-	private void insertJmxAttributeProperties(final int attributeId, final JmxAttributeProperties jmxAttributeProperties) {
-		final String insertSql = "INSERT INTO jmx_attribute_property (attribute_id, property_name, property_value) VALUES (?, ?, ?)";
-		for (Map.Entry<String, String> entrySet : jmxAttributeProperties.entrySet()) {
-			jdbcTemplate.update(insertSql, new Object[] { attributeId, entrySet.getKey(), entrySet.getValue() });
-		}
-	}
-	
 	@Override
 	public void batchInsertAttributeValues(final List<JmxAttributeValue> jmxAttributeValues) {
 		String sql = "INSERT INTO jmx_attribute_value (attribute_id, attribute_value, poll_timestamp) VALUES (?, ?, ?)";
@@ -180,29 +173,14 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 		}
 	}
 	
-	public class JmxAttributePropertyResultSetExtractor implements ResultSetExtractor<JmxAttributeProperties> {
-		public JmxAttributeProperties extractData(ResultSet rs) throws SQLException, DataAccessException {
-			JmxAttributeProperties jmxAttributeProperties = new JmxAttributeProperties();
-			
-			while (rs.next()) {
-				jmxAttributeProperties.put(rs.getString("property_name"), rs.getString("property_value"));
-			}
-			
-			return jmxAttributeProperties;
-		}
-	}
-	
 	public JmxAttribute getJmxAttributeValuesByAttributeId(final int attributeId, GraphFilter filter) {
-		// TODO: Get attribute values and properties in a single query
 		String selectQuery =
 				"SELECT ja.attribute_id, ja.object_name_id, ja.attribute_name, ja.attribute_type, ja.path, ja.enabled, jav.value_id, jav.attribute_value, jav.poll_timestamp " +
 				"FROM jmx_attribute ja LEFT JOIN jmx_attribute_value jav ON ja.attribute_id = jav.attribute_id " +
 				"WHERE attribute_id = ? AND poll_timestamp > ?";
 		
-		JmxAttribute jmxAttribute = jdbcTemplate.query(selectQuery, new Object[] { attributeId, filter.getSqlDateClause() }, jmxAttributeResultSetExtractor).iterator().next();
-		jmxAttribute.getAttributeProperties().putAll(jdbcTemplate.query("SELECT property_name, property_value FROM jmx_attribute_property WHERE attribute_id = ?", new Object[] { attributeId }, new JmxAttributePropertyResultSetExtractor()));
-		
-		return jmxAttribute;
+		Collection<JmxAttribute> jmxAttributeCollection = jdbcTemplate.query(selectQuery, new Object[] { attributeId, filter.getSqlDateClause() }, jmxAttributeResultSetExtractor);
+		return jmxAttributeCollection.isEmpty() ? null : jmxAttributeCollection.iterator().next();
 	}
 	
 	@Override
@@ -219,11 +197,15 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 	public JmxObjectName getJmxObjectName(final String objectName) {
 		String selectQuery = "SELECT object_name_id, canonical_object_name, description FROM jmx_object_name WHERE canonical_object_name = ?";
 		
-		return jdbcTemplate.queryForObject(selectQuery, new Object[] { objectName }, new RowMapper<JmxObjectName>() {
-			public JmxObjectName mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return new JmxObjectName(rs.getInt("object_name_id"), rs.getString("canonical_object_name"), rs.getString("description"));
-			}
-		});
+		try {
+			return jdbcTemplate.queryForObject(selectQuery, new Object[] { objectName }, new RowMapper<JmxObjectName>() {
+				public JmxObjectName mapRow(ResultSet rs, int rowNum) throws SQLException {
+					return new JmxObjectName(rs.getInt("object_name_id"), rs.getString("canonical_object_name"), rs.getString("description"));
+				}
+			});
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 	
 	@Override
@@ -241,11 +223,15 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 	public JmxAttribute getJmxAttribute(final int objectNameId, final String attributeName) {
 		String selectQuery = "SELECT attribute_id, object_name_id, attribute_name, attribute_type, path, enabled FROM jmx_attribute WHERE object_name_id = ? AND attribute_name = ?";
 		
-		return jdbcTemplate.queryForObject(selectQuery, new Object[] { objectNameId, attributeName }, new RowMapper<JmxAttribute>() {
-			public JmxAttribute mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return new JmxAttribute(rs.getInt("attribute_id"), objectNameId, attributeName, rs.getString("attribute_type"), rs.getString("path"), rs.getInt("enabled") == 1);
-			}
-		});
+		try {
+			return jdbcTemplate.queryForObject(selectQuery, new Object[] { objectNameId, attributeName }, new RowMapper<JmxAttribute>() {
+				public JmxAttribute mapRow(ResultSet rs, int rowNum) throws SQLException {
+					return new JmxAttribute(rs.getInt("attribute_id"), objectNameId, attributeName, rs.getString("attribute_type"), rs.getString("path"), rs.getInt("enabled") == 1);
+				}
+			});
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 	
 	@Override

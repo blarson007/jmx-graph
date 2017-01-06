@@ -5,12 +5,8 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.jmxgraph.domain.JmxAttributeProperties;
-import com.jmxgraph.ui.GraphFilter;
-import com.jmxgraph.ui.GraphObject;
 import com.jmxgraph.ui.GraphObject.DataPoint;
 import com.jmxgraph.ui.GraphObject.Series;
-import com.jmxgraph.ui.JsonGraph;
 
 public class JmxAttribute {
 
@@ -21,7 +17,6 @@ public class JmxAttribute {
 	private String path;
 	private boolean enabled = true;
 	private Collection<JmxAttributeValue> attributeValues = new TreeSet<>();
-	private JmxAttributeProperties attributeProperties = new JmxAttributeProperties();
 	
 	private JmxObjectName jmxObjectName; // We will need a reference back to the parent in some cases
 	
@@ -70,10 +65,6 @@ public class JmxAttribute {
 		return attributeValues;
 	}
 	
-	public JmxAttributeProperties getAttributeProperties() {
-		return attributeProperties;
-	}
-	
 	public JmxObjectName getJmxObjectName() {
 		return jmxObjectName;
 	}
@@ -81,20 +72,6 @@ public class JmxAttribute {
 	public void setJmxObjectName(JmxObjectName jmxObjectName) {
 		// TODO: Set it manually for now. Try to work this into constructor, etc.
 		this.jmxObjectName = jmxObjectName;
-	}
-	
-	public String getGraphTypeProperty() {
-		String value = attributeProperties.get(JmxAttributeProperties.GRAPH_TYPE);
-		return value == null ? JmxAttributeProperties.GRAPH_TYPE_NONE : value;
-	}
-	
-	public boolean getOnlyIntegerProperty() {
-		String value = attributeProperties.get(JmxAttributeProperties.INTEGER_VALUE);
-		return value == null ? false : Boolean.parseBoolean(value);
-	}
-	
-	public boolean containsProperty(String propertyName) {
-		return attributeProperties.containsKey(propertyName);
 	}
 	
 	public String getAttributeDescription() {
@@ -113,33 +90,6 @@ public class JmxAttribute {
 		}
 		
 		return true;
-	}
-	
-	@Deprecated // Use buildGraphSeries instead
-	public JsonGraph getGraphObject(GraphFilter filter) {
-		if (!isNumericDataType()) {
-			return new JsonGraph("Cannot create a graph for a non-numeric data type");
-		}
-		
-		DataPoint[] dataPoints = new DataPoint[attributeValues.size()];
-		
-		int index = 0;
-		for (JmxAttributeValue value : attributeValues) {
-			// This is a hack to get non integer values to display
-			try {
-				dataPoints[index] = new DataPoint(value.getTimestamp(), applyMultiplier(Integer.parseInt(String.valueOf(value.getAttributeValue()))));
-			} catch (NumberFormatException e) {
-				try {
-					dataPoints[index] = new DataPoint(value.getTimestamp(), applyMultiplier(Long.parseLong(String.valueOf(value.getAttributeValue()))));
-				} catch (NumberFormatException ne) {
-					dataPoints[index] = new DataPoint(value.getTimestamp(), applyMultiplier(Double.parseDouble(String.valueOf(value.getAttributeValue()))));
-				}
-			}
-			
-			index++;
-		}
-		
-		return new JsonGraph(new GraphObject(new Series(dataPoints)), filter.getLabelFormat(), getGraphTypeProperty(), getOnlyIntegerProperty());
 	}
 	
 	public Series buildGraphSeries(int multiplier) {
@@ -167,11 +117,6 @@ public class JmxAttribute {
 		return new Series(dataPoints);
 	}
 	
-	private <N extends Number> Number applyMultiplier(N number) {
-		String multiplier = attributeProperties.get(JmxAttributeProperties.MULTIPLIER);
-		return multiplier == null ? number : Integer.parseInt(multiplier) * number.doubleValue();
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -207,13 +152,5 @@ public class JmxAttribute {
 		} else if (!path.equals(other.path))
 			return false;
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "JmxAttribute [attributeId=" + attributeId + ", objectNameId=" + objectNameId + ", attributeName="
-				+ attributeName + ", attributeType=" + attributeType + ", path=" + path + ", enabled=" + enabled
-				+ ", attributeValues=" + attributeValues + ", attributeProperties=" + attributeProperties
-				+ ", jmxObjectName=" + jmxObjectName + "]";
 	}
 }

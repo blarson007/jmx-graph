@@ -3,8 +3,6 @@ package com.jmxgraph.domain.jmx;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.jmxgraph.domain.JmxAttributeProperties;
-
 public class JmxObjectName {
 
 	private int objectNameId;
@@ -52,17 +50,11 @@ public class JmxObjectName {
 	}
 	
 	public String getObjectNameShortened() {
-		// Wrap to 120 characters
+		// Wrap to 110 characters
 		if (canonicalName.length() < 110) {
 			return canonicalName;
 		} else {
 			return canonicalName.substring(0, 109) + "...";
-		}
-	}
-	
-	public void applyAttributeProperties(JmxAttributeProperties attributeProperties) {
-		for (JmxAttribute attribute : attributes) {
-			attribute.getAttributeProperties().putAll(attributeProperties);
 		}
 	}
 	

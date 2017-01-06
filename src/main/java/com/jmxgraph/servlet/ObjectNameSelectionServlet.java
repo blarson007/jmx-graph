@@ -16,9 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.jmxgraph.domain.jmx.JmxAttribute;
+import com.jmxgraph.businessaction.JmxGraphHandler;
 import com.jmxgraph.domain.jmx.JmxObjectName;
 import com.jmxgraph.mbean.JmxAccessor;
 import com.jmxgraph.repository.jmx.JdbcAttributeRepository;
@@ -61,33 +60,7 @@ public class ObjectNameSelectionServlet extends HttpServlet {
 		String attributeName = request.getParameter("attributeName");
 		String attributeType = request.getParameter("attributeType");
 		
-		JmxAttributeRepository repository = JdbcAttributeRepository.getInstance();
-		
-		JmxObjectName jmxObjectName = null;
-		JmxAttribute jmxAttribute = null;
-		try {
-			jmxObjectName = repository.getJmxObjectName(objectName);
-			jmxAttribute = repository.getJmxAttribute(jmxObjectName.getObjectNameId(), attributeName);
-			
-			if (!jmxAttribute.isEnabled()) { // Enable the attribute path
-				logger.debug("Attribute " + attributeName + " is not enabled. Enabling attribute.");
-				repository.enableJmxAttributePath(jmxAttribute.getAttributeId());
-			} else { // Disable the attribute path
-				logger.debug("Attribute " + attributeName + " is already enabled. Disabling attribute.");
-				repository.disableJmxAttributePath(jmxAttribute.getAttributeId());
-			}
-		} catch (EmptyResultDataAccessException e) {
-			logger.debug("Attribute " + attributeName + " was not found in the database. Persisting attribute.");
-			if (jmxObjectName == null) {
-				Set<JmxAttribute> attributes = new HashSet<>();
-				JmxAttribute attributeToInsert = new JmxAttribute(attributeName, attributeType);
-				attributes.add(attributeToInsert);
-				
-				repository.insertJmxObjectName(new JmxObjectName(objectName, "", attributes));
-			} else {
-				repository.insertJmxAttribute(jmxObjectName.getObjectNameId(), new JmxAttribute(attributeName, attributeType));
-			}
-		}
+		JmxGraphHandler.getInstance().toggleJmxGraph(objectName, attributeName, attributeType);
 	}
 	
 	private Map<String, Set<JmxObjectName>> buildObjectNameMap(Set<JmxObjectName> objectNames) {

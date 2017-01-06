@@ -7,12 +7,9 @@ import org.slf4j.LoggerFactory;
 import com.jmxgraph.config.Initializable;
 import com.jmxgraph.domain.appconfig.ApplicationConfig;
 import com.jmxgraph.domain.appconfig.JmxConnectionConfig;
-import com.jmxgraph.domain.defaults.DefaultGraph;
 import com.jmxgraph.mbean.JmxAccessor;
 import com.jmxgraph.repository.appconfig.ApplicationConfigRepository;
 import com.jmxgraph.repository.appconfig.XmlApplicationConfigRepository;
-import com.jmxgraph.repository.jmx.JdbcAttributeRepository;
-import com.jmxgraph.repository.jmx.JmxAttributeRepository;
 
 public class ApplicationConfigHandler implements Initializable<ApplicationConfig> {
 	
@@ -52,7 +49,6 @@ public class ApplicationConfigHandler implements Initializable<ApplicationConfig
 
 		startJmx(newConfig.getJmxConnectionConfig());
 		
-//		populateDefaultObjects(newConfig);
 		JmxTemplateHandler.getInstance().processDefaultJmxTemplates();
 		
 		startPoller(newConfig.getPollIntervalInSeconds());
@@ -80,14 +76,5 @@ public class ApplicationConfigHandler implements Initializable<ApplicationConfig
 		JmxAccessor.getInstance().shutdown();
 		
 		jmxStarted = false;
-	}
-	
-	private void populateDefaultObjects(ApplicationConfig config) throws Exception {
-		JmxAttributeRepository repository = JdbcAttributeRepository.getInstance();
-		JmxAccessor jmxAccessor = JmxAccessor.getInstance();
-		
-		for (DefaultGraph object : DefaultGraph.values()) {
-			object.handleObject(config, jmxAccessor, repository);
-		}
 	}
 }
