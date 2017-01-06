@@ -40,6 +40,7 @@ public class JmxGraphServlet extends HttpServlet {
 			request.setAttribute("pollIntervalMs", pollScheduler.getPollIntervalInSeconds() * 1000);
 			request.setAttribute("filters", GraphFilter.values());
 			request.setAttribute("jmxList", enabledGraphs);
+			request.setAttribute("attributeColors", new String[] { "red", "blue", "green", "yellow" });
 		}
 		
 		dispatcher.forward(request, response);

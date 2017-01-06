@@ -31,6 +31,7 @@
     				}
     			} else {
     				$('#graph' + graphId).html('');
+    				$('#graphDetails' + graphId).hide();
     				$('#showHide' + graphId).html('View');
     				
     				removePath(graphId);
@@ -62,6 +63,7 @@
 					} else {
 						new Chartist.Line('#graph' + graphId, jsonResponse.graphObject, {
 							showPoint: false,
+							showArea: jsonResponse.graphType == 'memory',
 							axisX: {
 							    type: Chartist.FixedScaleAxis,
 								divisor: 10,
@@ -70,7 +72,7 @@
 								}
 							},
 							axisY: {
-								offset: 60,
+								offset: 50,
 								onlyInteger: jsonResponse.onlyInteger,
 								labelInterpolationFnc: function(value) {
 									if (jsonResponse.graphType == 'memory') {
@@ -82,6 +84,7 @@
 								}
 							}
 						});
+						$('#graphDetails' + graphId).show();
 					}
 				});
     		}
@@ -127,15 +130,7 @@
 	            	</table>
 	            </c:when>
             	<c:otherwise>
-		            <table class="table table-striped">
-		                <thead>
-		                    <tr>
-		                        <td style="font-weight: bold">Graph Name</td>
-		                        <td style="font-weight: bold">&nbsp;</td>
-		                        <td></td>
-		                        <td></td>
-		                    </tr>
-		                </thead>
+		            <table class="table" style="background-color: #f9f9f9">
 		                <c:forEach var="jmxGraph" items="${jmxList}">
 		                    <tr>
 		                        <td>${jmxGraph.graphName}</td>
@@ -152,8 +147,28 @@
 		                        	<button id="showHide${jmxGraph.graphId}" type="submit" class="btn btn-primary" onclick="showHideGraph('${jmxGraph.graphId}');">View</button>
 		                        </td>
 		                    </tr>
-		                    <tr>
+		                    <tr style="background-color: white">
 		                    	<td colspan="4" id="graph${jmxGraph.graphId}"></td>
+		                    </tr>
+		                    <tr>	
+		                    	<td colspan="4" id="graphDetails${jmxGraph.graphId}" hidden="true">
+		                    		<table class="table">
+		                    			<thead>
+						                    <tr>
+						                        <td style="font-weight: bold">Object Name</td>
+						                        <td style="font-weight: bold">Attribute</td>
+						                        <td style="font-weight: bold">Color</td>
+						                    </tr>
+						                </thead>
+						                <c:forEach var="attribute" items="${jmxGraph.attributes}" varStatus="attributeIndex">
+						                	<tr>
+							                	<td width="70%" style="font-size: 14px;">${attribute.jmxObjectName.objectNameShortened}</td>
+							                	<td width="21%" style="font-size: 14px;">${attribute.attributeDescription}</td>
+							                	<td width="9%" style="font-size: 14px;" id="${jxmGraph.graphId}-${attribute.attributeId}-color">${attributeColors[attributeIndex.index]}</td>
+						                	</tr>
+						                </c:forEach>
+		                    		</table>
+		                    	</td>
 		                    </tr>
 		                </c:forEach>               
 		            </table>

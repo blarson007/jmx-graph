@@ -53,10 +53,10 @@ public class JmxObjectName {
 	
 	public String getObjectNameShortened() {
 		// Wrap to 120 characters
-		if (canonicalName.length() < 120) {
+		if (canonicalName.length() < 110) {
 			return canonicalName;
 		} else {
-			return canonicalName.substring(0, 119) + "...";
+			return canonicalName.substring(0, 109) + "...";
 		}
 	}
 	

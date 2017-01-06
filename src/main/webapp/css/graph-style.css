@@ -14,6 +14,22 @@
 	stroke: green;
 }
 
-.ct-seriesd .ct-line {
+.ct-series-d .ct-line {
 	stroke: yellow;
+}
+
+.ct-series-a .ct-area {
+	fill: red;
+}
+
+.ct-series-b .ct-area {
+	fill: blue;
+}
+
+.ct-series-c .ct-area {
+	fill: green;
+}
+
+.ct-series-d .ct-area {
+	fill: yellow;
 }
