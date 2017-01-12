@@ -78,7 +78,6 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 		Set<JmxAttribute> attributes = new HashSet<>();
 		for (JmxAttribute jmxAttribute : jmxObjectName.getAttributes()) {
 			attributes.add(insertJmxAttribute(holder.getKey().intValue(), jmxAttribute));
-//			insertJmxAttributeProperties(attribute.getAttributeId(), jmxAttribute.getAttributeProperties());
 		}
 		
 		return new JmxObjectName(holder.getKey().intValue(), jmxObjectName.getCanonicalName(), jmxObjectName.getDescription(), attributes);
@@ -312,20 +311,24 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 	
 	@Override
 	public void removeJmxGraphAttribute(final int jmxGraphId, final int jmxAttributeId) {
-		jdbcTemplate.update("DELETE FROM jmx_graph_attribute WHERE jmx_graph_id = ? AND jmx_graph_attribute_id = ?", new Object[] { jmxGraphId, jmxAttributeId });
+		jdbcTemplate.update("DELETE FROM jmx_graph_attribute WHERE graph_id = ? AND attribute_id = ?", new Object[] { jmxGraphId, jmxAttributeId });
+	}
+	
+	private static final String graphSelectionQuery =
+			"SELECT jon.object_name_id, jon.canonical_object_name, jon.description, ja.attribute_id, ja.attribute_name, ja.attribute_type, ja.path, ja.enabled, jg.graph_id, jg.graph_name, jg.graph_type, jg.multiplier, jg.integer_value " +
+			"FROM jmx_graph jg " +
+					"LEFT JOIN jmx_graph_attribute jga ON jg.graph_id = jga.graph_id " +
+					"LEFT JOIN jmx_attribute ja ON jga.attribute_id = ja.attribute_id " +
+					"LEFT JOIN jmx_object_name jon ON ja.object_name_id = jon.object_name_id ";
+	
+	@Override
+	public Collection<JmxGraph> getAllGraphs() {
+		return jdbcTemplate.query(graphSelectionQuery, new JmxGraphFullResultSetExtractor());
 	}
 	
 	@Override
 	public Collection<JmxGraph> getAllEnabledGraphs() {
-		String selectQuery =
-				"SELECT jon.object_name_id, jon.canonical_object_name, jon.description, ja.attribute_id, ja.attribute_name, ja.attribute_type, ja.path, ja.enabled, jg.graph_id, jg.graph_name, jg.graph_type, jg.multiplier, jg.integer_value " +
-				"FROM jmx_graph jg " +
-						"JOIN jmx_graph_attribute jga ON jg.graph_id = jga.graph_id " +
-						"JOIN jmx_attribute ja ON jga.attribute_id = ja.attribute_id " +
-						"JOIN jmx_object_name jon ON ja.object_name_id = jon.object_name_id " +
-				"WHERE ja.enabled = 1";
-		
-		return jdbcTemplate.query(selectQuery, new JmxGraphFullResultSetExtractor());
+		return jdbcTemplate.query(graphSelectionQuery + "WHERE ja.enabled = 1", new JmxGraphFullResultSetExtractor());
 	}
 	
 	public class JmxGraphFullResultSetExtractor implements ResultSetExtractor<Collection<JmxGraph>> {
@@ -341,10 +344,14 @@ public class JdbcAttributeRepository implements JmxAttributeRepository {
 					jmxGraphMap.put(graphId, jmxGraph);
 				}
 				
-				JmxAttribute jmxAttribute = new JmxAttribute(rs.getInt("attribute_id"), rs.getInt("object_name_id"), rs.getString("attribute_name"), rs.getString("attribute_type"), rs.getString("path"), rs.getInt("enabled") == 1);
-				jmxAttribute.setJmxObjectName(new JmxObjectName(rs.getInt("object_name_id"), rs.getString("canonical_object_name"), rs.getString("description")));
+				Integer jmxAttributeId = rs.getInt("attribute_id");
 				
-				jmxGraph.getAttributes().add(jmxAttribute);
+				if (jmxAttributeId != null) {
+					JmxAttribute jmxAttribute = new JmxAttribute(rs.getInt("attribute_id"), rs.getInt("object_name_id"), rs.getString("attribute_name"), rs.getString("attribute_type"), rs.getString("path"), rs.getInt("enabled") == 1);
+					jmxAttribute.setJmxObjectName(new JmxObjectName(rs.getInt("object_name_id"), rs.getString("canonical_object_name"), rs.getString("description")));
+					
+					jmxGraph.getAttributes().add(jmxAttribute);
+				}	
 			}
 			
 			return jmxGraphMap.values();

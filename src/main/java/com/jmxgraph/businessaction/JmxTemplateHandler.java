@@ -1,7 +1,12 @@
 package com.jmxgraph.businessaction;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,6 +35,8 @@ import com.jmxgraph.repository.jmx.JmxAttributeRepository;
 public class JmxTemplateHandler {
 	
 	private static final Logger logger = LoggerFactory.getLogger(JmxTemplateHandler.class);
+	
+	private static final String TEMPLATE_LOCATION = System.getProperty("user.home") + "/.jmxgraph/template/";
 
 	private JmxTemplateHandler() {  }
 	
@@ -50,13 +57,58 @@ public class JmxTemplateHandler {
 		}
 	}
 	
-	public void processJmxTemplate(InputStream jmxTemplateInputStream) {
+	public void processJmxTemplates(String... templateFilePaths) {
+		for (String filePath : templateFilePaths) {
+			try {
+				processJmxTemplate(new FileInputStream(new File(filePath)));
+			} catch (Exception e) {
+				logger.error("Error while processing template file: " + filePath, e);
+			}
+		}
+	}
+	
+	public void saveJmxTemplates(String... templateFilePaths) {
+		for (String filePath : templateFilePaths) {
+			try {
+				File templateFile = new File(filePath);
+				Path destination = Paths.get(TEMPLATE_LOCATION + templateFile.getName());
+				if (destination.toFile().exists()) {
+					logger.warn("File: " + filePath + " already exists in the jmx-graph working directory.");
+				} else {
+					logger.debug("Copying template file: " + filePath + " to jmx-graph working directory.");
+					if (!Files.exists(Paths.get(TEMPLATE_LOCATION))) {
+						Files.createDirectories(Paths.get(TEMPLATE_LOCATION));
+					}
+					
+					Files.copy(new FileInputStream(templateFile), destination);
+				}
+			} catch (Exception e) {
+				logger.error("Error while copying template file: " + filePath, e);
+			}
+		}
+	}
+	
+	public void processSavedTemplates() {
+		File templateDirectory = new File(TEMPLATE_LOCATION);
+		for (File templateFile : templateDirectory.listFiles()) {
+			if (templateFile.getName().endsWith(".xml")) {
+				try {
+					logger.debug("Processing template file: " + templateFile.getName());
+					processJmxTemplate(new FileInputStream(templateFile));
+					
+					templateFile.delete();
+				} catch (Exception e) {
+					logger.error("Error while processing template file: " + templateFile.getName(), e);
+				}
+			}
+		}
+	}
+	
+	private void processJmxTemplate(InputStream jmxTemplateInputStream) {
 		JmxTemplate jmxTemplate = JAXB.unmarshal(jmxTemplateInputStream, JmxTemplate.class);
 		
 		JmxAttributeRepository repository = JdbcAttributeRepository.getInstance();
 		JmxAccessor jmxAccessor = JmxAccessor.getInstance();
-		
-//		Map<String, JmxObjectName> objectNameMap = new HashMap<>();
 		
 		for (GraphTemplate graphTemplate : jmxTemplate.getGraphs()) {
 			Set<JmxAttribute> attributes = new HashSet<>();

@@ -47,6 +47,8 @@ public interface JmxAttributeRepository extends Initializable<DataSource> {
 	
 	void removeJmxGraphAttribute(final int jmxGraphId, final int jmxAttributeId);
 	
+	Collection<JmxGraph> getAllGraphs();
+	
 	Collection<JmxGraph> getAllEnabledGraphs();
 	
 	void saveOrUpdate(JmxObjectName jmxObjectName);

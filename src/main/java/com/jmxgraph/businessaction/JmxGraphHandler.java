@@ -57,24 +57,38 @@ public class JmxGraphHandler {
 			jmxAttribute = repository.insertJmxAttribute(jmxObjectName.getObjectNameId(), jmxAttribute);
 		}
 		
-		boolean graphExists = false;
-		Collection<JmxGraph> jmxGraphs = repository.getAllEnabledGraphs();
+		Collection<JmxGraph> jmxGraphs = repository.getAllGraphs();
+		JmxGraph targetGraph = null;
+		JmxAttribute targetAttribute = null;
 		
 		for (JmxGraph jmxGraph : jmxGraphs) {
-			if (jmxGraph.containsAttribute(jmxAttribute)) {
-				graphExists = true;
+			if (jmxGraph.getGraphName().equals(buildGraphName(objectName, attributeName))) {
+				targetGraph = jmxGraph;
+				
+				if (jmxGraph.containsAttribute(jmxAttribute)) {
+					targetAttribute = jmxGraph.getAttributes().iterator().next();
+				}
 				break;
 			}
 		}
 		
-		if (graphExists) {
+		if (targetGraph != null && targetAttribute != null) {
 			// Remove attribute from the graph
+			repository.removeJmxGraphAttribute(targetGraph.getGraphId(), targetAttribute.getAttributeId());
+		} else if (targetGraph != null) {
+			// Add the existing attribute to the existing graph
+			targetAttribute = repository.getJmxAttribute(jmxObjectName.getObjectNameId(), attributeName);
+			repository.insertJmxGraphAttribute(targetGraph.getGraphId(), targetAttribute.getAttributeId());
 		} else {
 			// Create a new graph with the attribute
 			Set<JmxAttribute> attributes = new HashSet<>();
 			attributes.add(jmxAttribute);
 			
-			repository.insertJmxGraph(new JmxGraph(objectName + " - " + attributeName, "none", 1, false, attributes));
+			repository.insertJmxGraph(new JmxGraph(buildGraphName(objectName, attributeName), "none", 1, false, attributes));
 		}
+	}
+	
+	private String buildGraphName(String objectName, String attributeName) {
+		return objectName + " - " + attributeName;
 	}
 }

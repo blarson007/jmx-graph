@@ -50,8 +50,8 @@
 	            <table class="table table-bordered">
 	                <c:forEach var="nameEntry" items="${objectNameMap}" varStatus="mapIter">
 	                	<tr class="dropdown">
-	                		<td style="background-color:gray;">${nameEntry.key}</td>
-	                		<td><button class="btn btn-info" id="button-${mapIter.index}" type="button" onclick="toggleVisibility('${mapIter.index}')">Expand</button></td>
+	                		<td style="background-color: #f9f9f9">${nameEntry.key}</td>
+	                		<td><button class="btn btn-primary" id="button-${mapIter.index}" type="button" onclick="toggleVisibility('${mapIter.index}')">Expand</button></td>
 	                	</tr>	
 	       				<c:forEach var="objectName" items="${nameEntry.value}" varStatus="objectNameIndex">
 	       					<tr class="collapse ${mapIter.index}">

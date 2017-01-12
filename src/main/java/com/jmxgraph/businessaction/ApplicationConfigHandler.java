@@ -50,6 +50,7 @@ public class ApplicationConfigHandler implements Initializable<ApplicationConfig
 		startJmx(newConfig.getJmxConnectionConfig());
 		
 		JmxTemplateHandler.getInstance().processDefaultJmxTemplates();
+		JmxTemplateHandler.getInstance().processSavedTemplates();
 		
 		startPoller(newConfig.getPollIntervalInSeconds());
 	}

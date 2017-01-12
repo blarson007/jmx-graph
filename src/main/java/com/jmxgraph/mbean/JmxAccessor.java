@@ -131,7 +131,7 @@ public class JmxAccessor implements Initializable<JmxConnectionConfig> {
 			}
 		}
 		
-		return new JmxObjectName(mbeanObjectName.getCanonicalName(), mBeanInfo.getDescription(), attributes);
+		return new JmxObjectName(objectName, mBeanInfo.getDescription(), attributes);
 	}
 	
 	public void shutdown() {
