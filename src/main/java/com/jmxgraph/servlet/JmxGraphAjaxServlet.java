@@ -9,29 +9,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jmxgraph.domain.JmxAttribute;
-import com.jmxgraph.repository.attribute.JdbcAttributeRepository;
-import com.jmxgraph.repository.attribute.JmxAttributeRepository;
+import com.jmxgraph.businessaction.JmxGraphHandler;
 import com.jmxgraph.ui.GraphFilter;
+import com.jmxgraph.ui.JsonGraph;
 
-@WebServlet(name = "JmxAttributeGraphAjaxServlet", urlPatterns = { "/jmx-attribute-graph-ajax.html" })
-public class JmxAttributeGraphAjaxServlet extends HttpServlet {
+@WebServlet(name = "JmxGraphAjaxServlet", urlPatterns = { "/jmx-graph-ajax.html" })
+public class JmxGraphAjaxServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 6731429154018155352L;
-	
+	private static final long serialVersionUID = 3162588107897104947L;
+
 	private ObjectMapper mapper = new ObjectMapper();
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		JmxAttributeRepository repository = JdbcAttributeRepository.getInstance();
-		
-		String attributeId = request.getParameter("attributeId");
+		String graphId = request.getParameter("graphId");
 		String filterId = request.getParameter("filterId");
 		GraphFilter filter = filterId == null ? GraphFilter.NOW : GraphFilter.getFilterById(Integer.parseInt(filterId));
 		
-		JmxAttribute attribute = repository.getJmxAttributeValuesByAttributeId(Integer.parseInt(attributeId), filter);
+		JsonGraph jsonGraph = JmxGraphHandler.getInstance().buildGraph(Integer.parseInt(graphId), filter);
 
-		String jsonResponse = mapper.writeValueAsString(attribute.getGraphObject(filter));
+		String jsonResponse = mapper.writeValueAsString(jsonGraph);
 		System.out.println(jsonResponse);
 		
 		response.setContentType("application/json");

@@ -1,6 +1,7 @@
 package com.jmxgraph.mbean;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -26,9 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jmxgraph.config.Initializable;
-import com.jmxgraph.domain.JmxAttribute;
-import com.jmxgraph.domain.JmxConnectionConfig;
-import com.jmxgraph.domain.JmxObjectName;
+import com.jmxgraph.domain.appconfig.JmxConnectionConfig;
+import com.jmxgraph.domain.jmx.JmxAttribute;
+import com.jmxgraph.domain.jmx.JmxObjectName;
 import com.jmxgraph.ui.JmxTestResult;
 import com.jmxgraph.ui.JmxTestResult.StatusCode;
 
@@ -94,6 +95,20 @@ public class JmxAccessor implements Initializable<JmxConnectionConfig> {
 		return objectNames;
 	}
 	
+	public JmxObjectName lookupAttribute(String objectName, String attribute, Collection<String> paths) throws MalformedObjectNameException, InstanceNotFoundException, 
+			IntrospectionException, ReflectionException, IOException, AttributeNotFoundException, MBeanException {
+		String[] pathArray = null;
+		if (paths != null) {
+			pathArray = new String[paths.size()];
+			int index = 0;
+			for (String path : paths) {
+				pathArray[index] = path;
+				index++;
+			}
+		}
+		return lookupAttribute(objectName, attribute, pathArray);
+	}
+	
 	public JmxObjectName lookupAttribute(String objectName, String attribute, String... paths) throws MalformedObjectNameException, InstanceNotFoundException, 
 			IntrospectionException, ReflectionException, IOException, AttributeNotFoundException, MBeanException {
 		Set<JmxAttribute> attributes = new HashSet<>();
@@ -116,7 +131,7 @@ public class JmxAccessor implements Initializable<JmxConnectionConfig> {
 			}
 		}
 		
-		return new JmxObjectName(mbeanObjectName.getCanonicalName(), mBeanInfo.getDescription(), attributes);
+		return new JmxObjectName(objectName, mBeanInfo.getDescription(), attributes);
 	}
 	
 	public void shutdown() {

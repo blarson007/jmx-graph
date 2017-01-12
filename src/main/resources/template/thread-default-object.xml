@@ -1,0 +1,15 @@
+<jmx_template>
+	<graphs>
+		<graph>
+			<graph_name>Thread Monitoring</graph_name>
+			<mbeans>
+				<mbean>
+					<canonical_name>java.lang:type=Threading</canonical_name>
+					<attribute_name>ThreadCount</attribute_name>
+				</mbean>
+			</mbeans>
+			<graph_type>none</graph_type>
+			<integer_value>true</integer_value>
+		</graph>
+	</graphs>
+</jmx_template>

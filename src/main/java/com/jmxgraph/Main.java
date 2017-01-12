@@ -10,10 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jmxgraph.businessaction.ApplicationConfigHandler;
+import com.jmxgraph.businessaction.JmxTemplateHandler;
 import com.jmxgraph.businessaction.TomcatManager;
-import com.jmxgraph.domain.ApplicationConfig;
-import com.jmxgraph.domain.JmxConnectionConfig;
-import com.jmxgraph.repository.attribute.JmxAttributeRepositoryType;
+import com.jmxgraph.domain.appconfig.ApplicationConfig;
+import com.jmxgraph.domain.appconfig.JmxConnectionConfig;
+import com.jmxgraph.repository.jmx.JmxAttributeRepositoryType;
 
 
 public class Main {
@@ -60,6 +61,17 @@ public class Main {
 			logger.error("Fatal error while starting up Tomcat", e);
 			System.exit(1);
 		}
+		
+		String[] templateFilePaths = commandLine.getOptionValues("template");
+		if (templateFilePaths != null && templateFilePaths.length > 0) {
+			if (ApplicationConfigHandler.getInstance().isInitialized()) {
+				// If the application has been started, we can attempt to apply the templates
+				JmxTemplateHandler.getInstance().processJmxTemplates(templateFilePaths);
+			} else {
+				// If the application has not been started, we'll save the templates and try to apply them later
+				JmxTemplateHandler.getInstance().saveJmxTemplates(templateFilePaths);
+			}
+		}	
 	}
 
 	private static Options createOptions() {
@@ -71,6 +83,7 @@ public class Main {
 		options.addOption(Option.builder("pass").longOpt(JmxConnectionConfig.JMX_PASSWORD_KEY).hasArg().desc("The password that is required for consumption via JMX.").type(String.class).build());
 		options.addOption(Option.builder("int").longOpt(ApplicationConfig.POLL_INTERVAL_KEY).hasArg().desc("The interval (in seconds) that the JMX collector should run.").type(Long.class).build());
 		options.addOption(Option.builder("per").longOpt(ApplicationConfig.REPOSITORY_TYPE_KEY).hasArg().desc("Persistence type to use. Valid options are in-memory and database.").type(String.class).build());
+		options.addOption(Option.builder("template").longOpt("jmx-template").hasArgs().desc("Paths to template files that contain graph object representations.").type(String.class).build());
 
 		return options;
 	}

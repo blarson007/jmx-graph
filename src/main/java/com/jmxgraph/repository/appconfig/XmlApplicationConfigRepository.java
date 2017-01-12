@@ -1,4 +1,4 @@
-package com.jmxgraph.repository.config;
+package com.jmxgraph.repository.appconfig;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -11,7 +11,7 @@ import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
-import com.jmxgraph.domain.ApplicationConfig;
+import com.jmxgraph.domain.appconfig.ApplicationConfig;
 
 public class XmlApplicationConfigRepository implements ApplicationConfigRepository {
 	

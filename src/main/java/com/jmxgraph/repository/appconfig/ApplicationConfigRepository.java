@@ -1,6 +1,6 @@
-package com.jmxgraph.repository.config;
+package com.jmxgraph.repository.appconfig;
 
-import com.jmxgraph.domain.ApplicationConfig;
+import com.jmxgraph.domain.appconfig.ApplicationConfig;
 
 public interface ApplicationConfigRepository {
 

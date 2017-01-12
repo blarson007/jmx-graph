@@ -31,3 +31,18 @@ CREATE TABLE jmx_attribute_property (
 	property_value	VARCHAR(255),
 	FOREIGN KEY(attribute_id) REFERENCES jmx_attribute(attribute_id)
 );
+
+CREATE TABLE jmx_graph (
+	graph_id		IDENTITY,
+	graph_name		VARCHAR(100),
+	graph_type		VARCHAR(20),
+	multiplier		INTEGER DEFAULT 1,
+	integer_value	INTEGER DEFAULT 0,
+	UNIQUE(graph_name)
+);
+
+CREATE TABLE jmx_graph_attribute (
+	graph_id		INTEGER,
+	attribute_id	INTEGER,
+	PRIMARY KEY(graph_id, attribute_id)
+);

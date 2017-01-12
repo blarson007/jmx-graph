@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jmxgraph.businessaction.ApplicationConfigHandler;
-import com.jmxgraph.domain.ApplicationConfig;
-import com.jmxgraph.domain.JmxConnectionConfig;
+import com.jmxgraph.domain.appconfig.ApplicationConfig;
+import com.jmxgraph.domain.appconfig.JmxConnectionConfig;
 
 @WebServlet(name = "ApplicationConfigServlet", urlPatterns = { "/configuration.html" })
 public class ApplicationConfigServlet extends HttpServlet {

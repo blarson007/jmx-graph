@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jmxgraph.domain.JmxConnectionConfig;
+import com.jmxgraph.domain.appconfig.JmxConnectionConfig;
 import com.jmxgraph.mbean.JmxAccessor;
 import com.jmxgraph.ui.JmxTestResult;
 import com.jmxgraph.ui.JmxTestResult.StatusCode;

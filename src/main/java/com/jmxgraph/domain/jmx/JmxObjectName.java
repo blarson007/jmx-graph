@@ -1,4 +1,4 @@
-package com.jmxgraph.domain;
+package com.jmxgraph.domain.jmx;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,7 +11,11 @@ public class JmxObjectName {
 	private Set<JmxAttribute> attributes;
 	
 	public JmxObjectName(final int objectNameId, final String canonicalName, final String description) {
-		this(canonicalName, description, new HashSet<JmxAttribute>());
+		this(objectNameId, canonicalName, description, new HashSet<JmxAttribute>());
+	}
+	
+	public JmxObjectName(final int objectNameId, final String canonicalName, final String description, Set<JmxAttribute> attributes) {
+		this(canonicalName, description, attributes);
 		this.objectNameId = objectNameId;
 	}
 	
@@ -33,10 +37,6 @@ public class JmxObjectName {
 		return description;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	public Set<JmxAttribute> getAttributes() {
 		return attributes;
 	}
@@ -50,17 +50,33 @@ public class JmxObjectName {
 	}
 	
 	public String getObjectNameShortened() {
-		// Wrap to 120 characters
-		if (canonicalName.length() < 120) {
+		// Wrap to 110 characters
+		if (canonicalName.length() < 110) {
 			return canonicalName;
 		} else {
-			return canonicalName.substring(0, 119) + "...";
+			return canonicalName.substring(0, 109) + "...";
 		}
 	}
 	
-	public void applyAttributeProperties(JmxAttributeProperties attributeProperties) {
-		for (JmxAttribute attribute : attributes) {
-			attribute.getAttributeProperties().putAll(attributeProperties);
+	public JmxObjectName merge(JmxObjectName other) {
+		if (!canonicalName.equals(other.getCanonicalName())) {
+			throw new IllegalArgumentException("JMX Objects cannot be merged unless they have the same canonical name");
 		}
+		
+		for (JmxAttribute attribute : other.getAttributes()) {
+			if (!this.containsAttribute(attribute)) {
+				addAttribute(attribute);
+			}
+		}
+		return this;
+	}
+	
+	public boolean containsAttribute(JmxAttribute attribute) {
+		for (JmxAttribute jmxAttribute : attributes) {
+			if (jmxAttribute.equals(attribute)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

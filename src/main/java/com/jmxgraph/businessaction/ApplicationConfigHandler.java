@@ -5,14 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jmxgraph.config.Initializable;
-import com.jmxgraph.domain.ApplicationConfig;
-import com.jmxgraph.domain.DefaultObject;
-import com.jmxgraph.domain.JmxConnectionConfig;
+import com.jmxgraph.domain.appconfig.ApplicationConfig;
+import com.jmxgraph.domain.appconfig.JmxConnectionConfig;
 import com.jmxgraph.mbean.JmxAccessor;
-import com.jmxgraph.repository.attribute.JdbcAttributeRepository;
-import com.jmxgraph.repository.attribute.JmxAttributeRepository;
-import com.jmxgraph.repository.config.ApplicationConfigRepository;
-import com.jmxgraph.repository.config.XmlApplicationConfigRepository;
+import com.jmxgraph.repository.appconfig.ApplicationConfigRepository;
+import com.jmxgraph.repository.appconfig.XmlApplicationConfigRepository;
 
 public class ApplicationConfigHandler implements Initializable<ApplicationConfig> {
 	
@@ -52,7 +49,8 @@ public class ApplicationConfigHandler implements Initializable<ApplicationConfig
 
 		startJmx(newConfig.getJmxConnectionConfig());
 		
-		populateDefaultObjects(newConfig);
+		JmxTemplateHandler.getInstance().processDefaultJmxTemplates();
+		JmxTemplateHandler.getInstance().processSavedTemplates();
 		
 		startPoller(newConfig.getPollIntervalInSeconds());
 	}
@@ -79,14 +77,5 @@ public class ApplicationConfigHandler implements Initializable<ApplicationConfig
 		JmxAccessor.getInstance().shutdown();
 		
 		jmxStarted = false;
-	}
-	
-	private void populateDefaultObjects(ApplicationConfig config) throws Exception {
-		JmxAttributeRepository repository = JdbcAttributeRepository.getInstance();
-		JmxAccessor jmxAccessor = JmxAccessor.getInstance();
-		
-		for (DefaultObject object : DefaultObject.values()) {
-			object.handleObject(config, jmxAccessor, repository);
-		}
 	}
 }

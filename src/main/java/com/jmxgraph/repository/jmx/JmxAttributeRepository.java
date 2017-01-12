@@ -1,4 +1,4 @@
-package com.jmxgraph.repository.attribute;
+package com.jmxgraph.repository.jmx;
 
 import java.util.Collection;
 import java.util.List;
@@ -6,17 +6,18 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import com.jmxgraph.config.Initializable;
-import com.jmxgraph.domain.JmxAttribute;
-import com.jmxgraph.domain.JmxAttributeValue;
-import com.jmxgraph.domain.JmxObjectName;
+import com.jmxgraph.domain.jmx.JmxAttribute;
+import com.jmxgraph.domain.jmx.JmxAttributeValue;
+import com.jmxgraph.domain.jmx.JmxGraph;
+import com.jmxgraph.domain.jmx.JmxObjectName;
 import com.jmxgraph.ui.GraphFilter;
 
 
 public interface JmxAttributeRepository extends Initializable<DataSource> {
 
-	void insertJmxObjectName(JmxObjectName jmxObjectName);
+	JmxObjectName insertJmxObjectName(JmxObjectName jmxObjectName);
 	
-	int insertJmxAttribute(final int objectNameId, final JmxAttribute jmxAttribute);
+	JmxAttribute insertJmxAttribute(final int objectNameId, final JmxAttribute jmxAttribute);
 	
 	void insertJmxAttributeValue(JmxAttributeValue jmxAttributeValue) throws Exception;
 	
@@ -35,4 +36,20 @@ public interface JmxAttributeRepository extends Initializable<DataSource> {
 	void enableJmxAttributePath(int pathId);
 	
 	void disableJmxAttributePath(int pathId);
+	
+	JmxGraph getJmxGraph(final String graphName);
+	
+	JmxGraph getJmxGraph(final int graphId);
+	
+	JmxGraph insertJmxGraph(JmxGraph jmxGraph);
+	
+	void insertJmxGraphAttribute(final int jmxGraphId, final int jmxAttributeId);
+	
+	void removeJmxGraphAttribute(final int jmxGraphId, final int jmxAttributeId);
+	
+	Collection<JmxGraph> getAllGraphs();
+	
+	Collection<JmxGraph> getAllEnabledGraphs();
+	
+	void saveOrUpdate(JmxObjectName jmxObjectName);
 }
