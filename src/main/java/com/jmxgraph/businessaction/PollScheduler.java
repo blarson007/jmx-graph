@@ -72,6 +72,8 @@ public class PollScheduler implements Initializable<Integer> {
 	}
 	
 	public void stopJobExection() throws SchedulerException {
-		scheduler.shutdown(true);
+		if (isInitialized()) {
+			scheduler.shutdown(true);
+		}
 	}
 }
