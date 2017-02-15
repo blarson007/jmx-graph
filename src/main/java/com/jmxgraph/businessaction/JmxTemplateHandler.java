@@ -90,6 +90,11 @@ public class JmxTemplateHandler {
 	
 	public void processSavedTemplates() {
 		File templateDirectory = new File(TEMPLATE_LOCATION);
+		
+		if (templateDirectory == null || !templateDirectory.isDirectory()) {
+			return;
+		}
+		
 		for (File templateFile : templateDirectory.listFiles()) {
 			if (templateFile.getName().endsWith(".xml")) {
 				try {
