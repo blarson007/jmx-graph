@@ -1,5 +1,6 @@
 package com.jmxgraph.businessaction;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jasypt.util.text.BasicTextEncryptor;
 
 public class TextEncryptor {
@@ -20,7 +21,7 @@ public class TextEncryptor {
 	}
 	
 	public String encrypt(String plainText) {
-		return basicTextEncryptor.encrypt(plainText);
+		return StringUtils.isBlank(plainText) ? plainText : basicTextEncryptor.encrypt(plainText);
 	}
 	
 	public String decrypt(String encrypted) {

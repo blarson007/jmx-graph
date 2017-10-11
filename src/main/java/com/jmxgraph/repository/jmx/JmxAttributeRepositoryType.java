@@ -6,7 +6,6 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.hsqldb.Server;
-import org.hsqldb.util.DatabaseManagerSwing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -39,7 +38,7 @@ public enum JmxAttributeRepositoryType {
 			registerShutdownHook(embeddedDatabase);
 			registerShutdownHook(hikariDataSource);
 			
-			DatabaseManagerSwing.main(new String[] { "--url", "jdbc:hsqldb:mem:testdb", "--user", "sa", "--password", "" });
+			//DatabaseManagerSwing.main(new String[] { "--url", "jdbc:hsqldb:mem:testdb", "--user", "sa", "--password", "" });
 			
 			JdbcAttributeRepository.getInstance().initialize(hikariDataSource);
 		}
@@ -74,7 +73,7 @@ public enum JmxAttributeRepositoryType {
 			buildTables(hikariDataSource);
 			
 			// This is a GUI database manager that can be used for development/troubleshooting
-			 DatabaseManagerSwing.main(new String[] { "--url", "jdbc:hsqldb:hsql://localhost:9001/jmx", "--user", "sa", "--password", "" });
+			//DatabaseManagerSwing.main(new String[] { "--url", "jdbc:hsqldb:hsql://localhost:9001/jmx", "--user", "sa", "--password", "" });
 			
 			JdbcAttributeRepository.getInstance().initialize(hikariDataSource);
 		}
