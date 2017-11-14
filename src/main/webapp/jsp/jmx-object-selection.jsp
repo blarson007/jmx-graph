@@ -56,9 +56,9 @@
 	       				<c:forEach var="objectName" items="${nameEntry.value}" varStatus="objectNameIndex">
 	       					<tr class="collapse ${mapIter.index}">
 	       						<td style="background-color: white;">&nbsp;&nbsp;${objectName.objectNameShortened}</td>
-	       						<td><button class="btn btn-info" type="button" data-toggle="modal" data-target="#myModal${objectNameIndex.index}">Expand</button></td>
+	       						<td><button class="btn btn-info" type="button" data-toggle="modal" data-target="#myModal-${mapIter.index}-${objectNameIndex.index}">Expand</button></td>
 	       					</tr>
-	       					<div class="modal modal-lg fade" id="myModal${objectNameIndex.index}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	       					<div class="modal modal-lg fade" id="myModal-${mapIter.index}-${objectNameIndex.index}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 							  <div class="modal-dialog" role="document">
 							    <div class="modal-content" style="display: table;">
 							      <div class="modal-header">

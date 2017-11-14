@@ -138,6 +138,8 @@ public class JmxTemplateHandler {
 	private Set<JmxAttribute> processMBean(MBeanTemplate mBeanTemplate, JmxAttributeRepository repository, JmxAccessor jmxAccessor) throws MalformedObjectNameException, 
 			InstanceNotFoundException, IntrospectionException, AttributeNotFoundException, ReflectionException, MBeanException, IOException {
 		
+		Set<JmxAttribute> attributesToReturn = new HashSet<>();
+		
 		JmxObjectName jmxObjectInRepository = repository.getJmxObjectNameWithAttributes(mBeanTemplate.getCanonicalName());
 		JmxObjectName jmxObjectInMBeanServer = jmxAccessor.lookupAttribute(mBeanTemplate.getCanonicalName(), mBeanTemplate.getAttributeName(), mBeanTemplate.getAttributePaths());
 		
@@ -154,7 +156,20 @@ public class JmxTemplateHandler {
 			}
 		}
 		
-		return jmxObjectInRepository.getAttributes();
+		for (JmxAttribute mbeanAttribute : jmxObjectInMBeanServer.getAttributes()) {
+			attributesToReturn.add(matchMBeanAttributeToRepoAttribute(mbeanAttribute, jmxObjectInRepository));
+		}
+		
+		return attributesToReturn;
+	}
+	
+	private JmxAttribute matchMBeanAttributeToRepoAttribute(JmxAttribute mbeanAttribute, JmxObjectName jmxObjectInRepo) {
+		for (JmxAttribute repoAttribute : jmxObjectInRepo.getAttributes()) {
+			if (mbeanAttribute.getAttributeName().equals(repoAttribute.getAttributeName())) {
+				return repoAttribute;
+			}
+		}
+		return null;
 	}
 	
 	private void processGraph(JmxGraph jmxGraph, JmxAttributeRepository repository) {
