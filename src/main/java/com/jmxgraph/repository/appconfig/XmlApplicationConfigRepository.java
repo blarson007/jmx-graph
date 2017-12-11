@@ -11,11 +11,12 @@ import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
+import com.jmxgraph.config.HomeDirectoryConfig;
 import com.jmxgraph.domain.appconfig.ApplicationConfig;
 
 public class XmlApplicationConfigRepository implements ApplicationConfigRepository {
 	
-	private static final String XML_REPO_LOCATION = System.getProperty("user.home") + "/.jmxgraph/config.xml";
+	private static final String XML_REPO_LOCATION = HomeDirectoryConfig.HOME_DIRECTORY + File.separator + "config.xml";
 	
 	private JAXBContext jaxbContext = null;
 	

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.jmxgraph.businessaction.ApplicationConfigHandler;
 import com.jmxgraph.businessaction.JmxTemplateHandler;
 import com.jmxgraph.businessaction.TomcatManager;
+import com.jmxgraph.config.HomeDirectoryConfig;
 import com.jmxgraph.domain.appconfig.ApplicationConfig;
 import com.jmxgraph.domain.appconfig.JmxConnectionConfig;
 import com.jmxgraph.repository.jmx.JmxAttributeRepositoryType;
@@ -28,6 +29,8 @@ public class Main {
 
 		ApplicationConfig config = null;
 		try {
+			HomeDirectoryConfig.createHomeDirectoryIfNotExists();
+			
 			commandLine = commandLineParser.parse(options, args);
 			config = parseCommandLineConfig(commandLine);
 			

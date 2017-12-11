@@ -1,5 +1,6 @@
 package com.jmxgraph.repository.jmx;
 
+import java.io.File;
 import java.sql.Connection;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 
+import com.jmxgraph.config.HomeDirectoryConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -52,7 +54,7 @@ public enum JmxAttributeRepositoryType {
 			boolean running = false;
 			
 			Server server = new Server();
-			server.setDatabasePath(0, "file:" + System.getProperty("user.home") + "/.jmxgraph/db");
+			server.setDatabasePath(0, "file:" + HomeDirectoryConfig.HOME_DIRECTORY + File.separator + "db");
 			server.setPort(9001);
 			server.setDatabaseName(0, "jmx");
 			server.checkRunning(running);
