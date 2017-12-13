@@ -11,17 +11,17 @@
     		<jsp:param value="MBeans" name="page" />
     	</jsp:include>
     	<script>
-    		function toggleSubscribe(myObjectName, myAttribute, myAttributeType, attributeIndex) {
+    		function toggleSubscribe(myObjectName, myAttribute, myAttributeType, attributeIdentifier) {
     			$.post("object-name-selection.html", {
     				objectName: myObjectName,
     				attributeName: myAttribute,
     				attributeType: myAttributeType
     			}, function(data) {
-    				var text = $('#attribute' + attributeIndex).text();
+    				var text = $('#' + attributeIdentifier).text();
     				if (text == 'Select') {
-    					$('#attribute' + attributeIndex).html('Remove');
+    					$('#' + attributeIdentifier).html('Remove');
     				} else {
-    					$('#attribute' + attributeIndex).html('Select');
+    					$('#' + attributeIdentifier).html('Select');
     				} 
     			});
     		}
@@ -78,13 +78,17 @@
 					                    <div class="divider">&nbsp;</div>
 					                  </div>
 							          <c:forEach var="attribute" items="${objectName.attributes}" varStatus="attributeIndex">
+							            <c:set var="buttonTextIdentifier" value="attribute${mapIter.index}-${objectNameIndex.index}-${attributeIndex.index}" />
 							            <c:set var="buttonText" value="Select" />
+							            <c:if test="${attribute.enabled}">
+							            	<c:set var="buttonText" value="Remove" />
+							            </c:if>
 							            <div class="row">
 							              <div class="col-xs-2 col-sm-2 col-lg-3" style="vertical-align: middle">${attribute.attributeName}</div>
 							              <div class="col-xs-2 col-sm-2 col-lg-3" style="vertical-align: middle">${attribute.attributeType}</div>
 							              <div class="col-xs-2 col-sm-2 col-lg-3">
-							                <button id="attribute${attributeIndex.index}" type="button" class="btn btn-primary" 
-			                        			onclick="toggleSubscribe('${objectName.objectNameEscaped}', '${attribute.attributeName}', '${attribute.attributeType}', '${attributeIndex.index}');">${buttonText}</button>
+							                <button id="${buttonTextIdentifier}" type="button" class="btn btn-primary" 
+			                        			onclick="toggleSubscribe('${objectName.objectNameEscaped}', '${attribute.attributeName}', '${attribute.attributeType}', '${buttonTextIdentifier}');">${buttonText}</button>
 							              </div>
 							            </div>
 							          </c:forEach>
