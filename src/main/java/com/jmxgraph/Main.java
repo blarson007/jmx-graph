@@ -34,7 +34,7 @@ public class Main {
 			commandLine = commandLineParser.parse(options, args);
 			config = parseCommandLineConfig(commandLine);
 			
-			config.getRepositoryType().createRepository();
+			config.getRepositoryType().createRepository(commandLine.hasOption("db"));
 		} catch (Exception e) {
 			logger.error("Fatal error while starting up the application.", e);
 			System.exit(1);
@@ -87,6 +87,7 @@ public class Main {
 		options.addOption(Option.builder("int").longOpt(ApplicationConfig.POLL_INTERVAL_KEY).hasArg().desc("The interval (in seconds) that the JMX collector should run.").type(Long.class).build());
 		options.addOption(Option.builder("per").longOpt(ApplicationConfig.REPOSITORY_TYPE_KEY).hasArg().desc("Persistence type to use. Valid options are in-memory and database.").type(String.class).build());
 		options.addOption(Option.builder("template").longOpt("jmx-template").hasArgs().desc("Paths to template files that contain graph object representations.").type(String.class).build());
+		options.addOption(Option.builder("db").longOpt("database-viewer").hasArgs().desc("Enable the database manager for debug purposes.").type(Boolean.class).build());
 
 		return options;
 	}

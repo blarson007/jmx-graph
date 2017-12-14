@@ -7,6 +7,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.hsqldb.Server;
+import org.hsqldb.util.DatabaseManagerSwing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -24,7 +25,7 @@ public enum JmxAttributeRepositoryType {
 	
 	IN_MEMORY_DB {
 		@Override
-		public void createRepository() {
+		public void createRepository(boolean enableDatabaseManager) {
 			logger.warn("Setting up in-memory datasource");
 			
 			EmbeddedDatabase embeddedDatabase = new EmbeddedDatabaseBuilder()
@@ -40,7 +41,9 @@ public enum JmxAttributeRepositoryType {
 			registerShutdownHook(embeddedDatabase);
 			registerShutdownHook(hikariDataSource);
 			
-			//DatabaseManagerSwing.main(new String[] { "--url", "jdbc:hsqldb:mem:testdb", "--user", "sa", "--password", "" });
+			if (enableDatabaseManager) {
+				DatabaseManagerSwing.main(new String[] { "--url", "jdbc:hsqldb:mem:testdb", "--user", "sa", "--password", "" });
+			}
 			
 			JdbcAttributeRepository.getInstance().initialize(hikariDataSource);
 		}
@@ -48,7 +51,7 @@ public enum JmxAttributeRepositoryType {
 	
 	EMBEDDED_DB {
 		@Override
-		public void createRepository() {
+		public void createRepository(boolean enableDatabaseManager) {
 			logger.warn("Setting up embedded datasource");
 			
 			boolean running = false;
@@ -75,7 +78,9 @@ public enum JmxAttributeRepositoryType {
 			buildTables(hikariDataSource);
 			
 			// This is a GUI database manager that can be used for development/troubleshooting
-			//DatabaseManagerSwing.main(new String[] { "--url", "jdbc:hsqldb:hsql://localhost:9001/jmx", "--user", "sa", "--password", "" });
+			if (enableDatabaseManager) {
+				DatabaseManagerSwing.main(new String[] { "--url", "jdbc:hsqldb:hsql://localhost:9001/jmx", "--user", "sa", "--password", "" });
+			}
 			
 			JdbcAttributeRepository.getInstance().initialize(hikariDataSource);
 		}
@@ -83,7 +88,7 @@ public enum JmxAttributeRepositoryType {
 	
 	private static final Logger logger = LoggerFactory.getLogger(JmxAttributeRepositoryType.class);
 	
-	public abstract void createRepository();
+	public abstract void createRepository(boolean enableDatabaseManager);
 	
 	private static void registerShutdownHook(final HikariDataSource hikariDataSource) {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
