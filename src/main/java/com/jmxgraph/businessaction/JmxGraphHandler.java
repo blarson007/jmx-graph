@@ -53,6 +53,7 @@ public class JmxGraphHandler {
 			attributes.add(jmxAttribute);
 			
 			jmxObjectName = repository.insertJmxObjectName(new JmxObjectName(objectName, "", attributes));
+			jmxAttribute = jmxObjectName.getAttributeByName(attributeName);
 		} else if (!jmxObjectName.containsAttribute(jmxAttribute)) {
 			jmxAttribute = repository.insertJmxAttribute(jmxObjectName.getObjectNameId(), jmxAttribute);
 		}

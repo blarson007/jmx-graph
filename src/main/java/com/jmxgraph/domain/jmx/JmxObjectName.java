@@ -79,4 +79,13 @@ public class JmxObjectName {
 		}
 		return false;
 	}
+	
+	public JmxAttribute getAttributeByName(String attributeName) {
+		for (JmxAttribute attribute : attributes) {
+			if (attribute.getAttributeName().equals(attributeName)) {
+				return attribute;
+			}
+		}
+		return null;
+	}
 }
